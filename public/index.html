@@ -2,23 +2,24 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>감정 외재화 도구</title>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Gowun Dodum',sans-serif;background:#f8f7f4;color:#2c2c2a;min-height:100vh;padding:2.5rem 1.5rem}
-.app{max-width:620px;margin:0 auto}
-.header{margin-bottom:2.5rem}
+html{overflow-x:hidden;width:100%}
+body{font-family:'Gowun Dodum',sans-serif;background:#f8f7f4;color:#2c2c2a;min-height:100vh;padding:2rem 1rem;overflow-x:hidden;width:100%}
+.app{max-width:620px;margin:0 auto;width:100%}
+.header{margin-bottom:2rem}
 .header h1{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:300;margin-bottom:0.5rem;letter-spacing:-0.01em}
 .header p{font-size:14px;color:#888780;line-height:1.75}
-.card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem}
+.card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;overflow:hidden}
 .section-label{font-size:11px;font-weight:500;color:#888780;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.875rem}
-textarea{width:100%;min-height:130px;padding:0.75rem 1rem;font-family:'Gowun Dodum',sans-serif;font-size:14px;line-height:1.8;border:0.5px solid #d3d1c7;border-radius:8px;background:#fff;color:#2c2c2a;resize:vertical;margin-bottom:1rem}
+textarea{width:100%;min-height:120px;padding:0.75rem 1rem;font-family:'Gowun Dodum',sans-serif;font-size:14px;line-height:1.8;border:0.5px solid #d3d1c7;border-radius:8px;background:#fff;color:#2c2c2a;resize:vertical;margin-bottom:1rem;-webkit-appearance:none}
 textarea:focus{outline:none;border-color:#888780}
 textarea::placeholder{color:#b4b2a9}
 .btn-row{display:flex;gap:0.5rem}
-button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13px;border-radius:8px;cursor:pointer;transition:all 0.15s}
+button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13px;border-radius:8px;cursor:pointer;transition:all 0.15s;-webkit-appearance:none}
 .btn-primary{flex:1;background:#2c2c2a;color:#f8f7f4;border:none}
 .btn-primary:hover{background:#444441}
 .btn-primary:disabled{opacity:0.35;cursor:not-allowed}
@@ -30,37 +31,60 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .results,.compare-section{display:none}
 .results.visible,.compare-section.visible{display:block;animation:fadeIn 0.4s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.colormap{height:52px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:0.75rem}
+.colormap{height:48px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:0.75rem}
 .colormap-seg{height:100%;transition:width 0.6s ease}
 .colormap-labels{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem}
 .emo-tag{display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a}
 .emo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.bar-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.65rem}
-.bar-label{font-size:13px;width:58px;flex-shrink:0;text-align:right}
+.bar-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem}
+.bar-label{font-size:13px;width:50px;flex-shrink:0;text-align:right}
 .bar-track{flex:1;height:7px;background:#f1efe8;border-radius:4px;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px;width:0;transition:width 0.8s ease}
 .bar-pct{font-size:12px;color:#888780;width:32px;flex-shrink:0}
-.insight-box{background:#f8f7f4;border-radius:8px;padding:1rem 1.125rem;margin-top:1.25rem;border:0.5px solid #d3d1c7}
+.insight-box{background:#f8f7f4;border-radius:8px;padding:1rem;margin-top:1.25rem;border:0.5px solid #d3d1c7}
 .insight-box .dominant{font-size:14px;margin-bottom:0.4rem}
 .insight-box p{font-size:13px;line-height:1.8;color:#5f5e5a}
 .divider{border:none;border-top:0.5px solid #d3d1c7;margin:1.75rem 0}
-.relax-notice{background:#e1f5ee;border-radius:8px;padding:1rem 1.125rem;font-size:13px;color:#085041;line-height:1.8;margin-bottom:1.25rem}
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
-.mini-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:1rem}
+.relax-notice{background:#e1f5ee;border-radius:8px;padding:1rem;font-size:13px;color:#085041;line-height:1.8;margin-bottom:1.25rem}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem}
+.mini-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:0.875rem}
 .mini-card h4{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem}
-.mini-row{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem}
-.mini-label{font-size:11px;color:#5f5e5a;width:44px;text-align:right;flex-shrink:0}
+.mini-row{display:flex;align-items:center;gap:0.3rem;margin-bottom:0.4rem}
+.mini-label{font-size:10px;color:#5f5e5a;width:38px;text-align:right;flex-shrink:0}
 .mini-track{flex:1;height:5px;background:#f1efe8;border-radius:3px;overflow:hidden}
 .mini-fill{height:100%;border-radius:3px}
-.mini-pct{font-size:11px;color:#b4b2a9;width:26px;flex-shrink:0}
-.change-row{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem}
-.change-label{font-size:13px;color:#5f5e5a;width:52px;text-align:right;flex-shrink:0}
-.badge{font-size:11px;padding:2px 9px;border-radius:20px}
-.badge-down{background:#e1f5ee;color:#085041}
-.badge-up{background:#faece7;color:#993c1d}
-.badge-same{background:#f1efe8;color:#888780}
-.compare-summary{background:#f8f7f4;border:0.5px solid #d3d1c7;border-radius:8px;padding:1rem 1.125rem;font-size:13px;line-height:1.8;color:#5f5e5a;margin-top:1rem}
+.mini-pct{font-size:10px;color:#b4b2a9;width:24px;flex-shrink:0}
+
+/* 변화량 시각화 강화 */
+.change-item{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem;padding:0.5rem 0.625rem;border-radius:8px;background:#fafaf8}
+.change-emo{font-size:13px;color:#2c2c2a;width:50px;flex-shrink:0;text-align:right;font-weight:500}
+.change-bar-wrap{flex:1;display:flex;align-items:center;position:relative;height:20px}
+.change-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#d3d1c7}
+.change-bar{position:absolute;height:14px;border-radius:4px;top:3px;transition:width 0.6s ease}
+.change-bar-neg{right:50%;background:#1D9E75}
+.change-bar-pos{left:50%;background:#D85A30}
+.change-val{font-size:12px;font-weight:500;width:48px;flex-shrink:0;text-align:center;padding:3px 6px;border-radius:6px}
+.val-down{background:#e1f5ee;color:#085041}
+.val-up{background:#faece7;color:#993c1d}
+.val-same{background:#f1efe8;color:#888780}
+
+.compare-summary{background:#f8f7f4;border:0.5px solid #d3d1c7;border-radius:8px;padding:1rem;font-size:13px;line-height:1.8;color:#5f5e5a;margin-top:1rem}
 .error-msg{background:#faece7;border:0.5px solid #e8a08a;border-radius:8px;padding:0.75rem 1rem;font-size:13px;color:#993c1d;margin-bottom:1rem;display:none}
+
+@media (max-width:480px){
+  body{padding:1.5rem 0.75rem}
+  .header h1{font-size:20px}
+  .header p{font-size:13px}
+  .card{padding:1rem}
+  .compare-grid{grid-template-columns:1fr;gap:0.5rem}
+  .bar-label{width:44px;font-size:12px}
+  .bar-pct{width:28px;font-size:11px}
+  .change-emo{width:44px;font-size:12px}
+  .change-val{width:44px;font-size:11px}
+  .mini-label{width:34px;font-size:10px}
+  .mini-pct{width:22px;font-size:10px}
+  textarea{min-height:100px;font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -120,7 +144,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
         <div class="mini-card"><h4>이완 전</h4><div id="miniBar1"></div></div>
         <div class="mini-card"><h4>이완 후</h4><div id="miniBar2"></div></div>
       </div>
-      <div class="section-label" style="margin-top:0.5rem">변화량</div>
+      <div class="section-label" style="margin-top:0.5rem">감정 변화량</div>
       <div id="changeBars"></div>
       <div class="compare-summary" id="compareSummary"></div>
     </div>
@@ -131,21 +155,21 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 </div>
 
 <script>
-const EMO_COLORS = {
+var EMO_COLORS = {
   '슬픔':'#7F77DD','불안':'#D85A30','그리움':'#1D9E75',
   '죄책감':'#BA7517','두려움':'#D4537E','사랑':'#5DCAA5','평온':'#378ADD'
 };
-let result1 = null, result2 = null;
+var result1 = null, result2 = null;
 
 function showError(msg) {
-  const el = document.getElementById('errorMsg');
+  var el = document.getElementById('errorMsg');
   el.textContent = msg;
   el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 5000);
+  setTimeout(function(){ el.style.display = 'none'; }, 5000);
 }
 
-async function analyze(phase) {
-  const text = document.getElementById('text' + phase).value.trim();
+function analyze(phase) {
+  var text = document.getElementById('text' + phase).value.trim();
   if (!text) { showError('감정을 먼저 써주세요.'); return; }
   if (text.length < 5) { showError('조금 더 자세하게 써주세요.'); return; }
 
@@ -155,22 +179,15 @@ async function analyze(phase) {
   if (phase === 1) document.getElementById('results1').classList.remove('visible');
   if (phase === 2) document.getElementById('compareSection').classList.remove('visible');
 
-  try {
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
-    });
-
-    const parsed = await res.json();
-
-    if (parsed.error) {
-      throw new Error(parsed.error);
-    }
-
-    if (!parsed.emotions || !parsed.dominant) {
-      throw new Error('분석 결과 형식이 올바르지 않아요.');
-    }
+  fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: text })
+  })
+  .then(function(res){ return res.json(); })
+  .then(function(parsed){
+    if (parsed.error) throw new Error(parsed.error);
+    if (!parsed.emotions || !parsed.dominant) throw new Error('분석 결과 형식이 올바르지 않아요.');
 
     document.getElementById('loading' + phase).style.display = 'none';
 
@@ -185,38 +202,41 @@ async function analyze(phase) {
       document.getElementById('compareSection').classList.add('visible');
       document.getElementById('compareSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  } catch(e) {
+  })
+  .catch(function(e){
     document.getElementById('loading' + phase).style.display = 'none';
     document.getElementById('btn' + phase).disabled = false;
     showError('분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
     console.error('Error:', e);
-  }
+  });
 }
 
 function renderResult(phase, data) {
-  const sorted = Object.entries(data.emotions).sort((a,b) => b[1]-a[1]).filter(e => e[1] > 0);
-  const total = sorted.reduce((s,e) => s+e[1], 0) || 1;
+  var sorted = Object.entries(data.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
+  var total = sorted.reduce(function(s,e){return s+e[1]}, 0) || 1;
 
-  const cm = document.getElementById('colormap' + phase);
+  var cm = document.getElementById('colormap' + phase);
   cm.innerHTML = '';
-  sorted.forEach(([n,v]) => {
-    const seg = document.createElement('div');
+  sorted.forEach(function(pair){
+    var n = pair[0], v = pair[1];
+    var seg = document.createElement('div');
     seg.className = 'colormap-seg';
     seg.style.cssText = 'width:' + (v/total*100).toFixed(1) + '%;background:' + (EMO_COLORS[n]||'#888780');
     cm.appendChild(seg);
   });
 
   document.getElementById('colormapLabels' + phase).innerHTML =
-    sorted.map(([n,v]) => '<div class="emo-tag"><div class="emo-dot" style="background:' + (EMO_COLORS[n]||'#888780') + '"></div><span>' + n + ' ' + v + '%</span></div>').join('');
+    sorted.map(function(pair){ var n=pair[0],v=pair[1]; return '<div class="emo-tag"><div class="emo-dot" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div><span>'+n+' '+v+'%</span></div>'; }).join('');
 
-  const bars = document.getElementById('bars' + phase);
+  var bars = document.getElementById('bars' + phase);
   bars.innerHTML = '';
-  sorted.forEach(([n,v]) => {
-    const row = document.createElement('div');
+  sorted.forEach(function(pair){
+    var n=pair[0], v=pair[1];
+    var row = document.createElement('div');
     row.className = 'bar-row';
-    row.innerHTML = '<div class="bar-label">' + n + '</div><div class="bar-track"><div class="bar-fill" style="background:' + (EMO_COLORS[n]||'#888780') + '"></div></div><div class="bar-pct">' + v + '%</div>';
+    row.innerHTML = '<div class="bar-label">'+n+'</div><div class="bar-track"><div class="bar-fill" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div></div><div class="bar-pct">'+v+'%</div>';
     bars.appendChild(row);
-    setTimeout(function(){ row.querySelector('.bar-fill').style.width = v + '%'; }, 100);
+    setTimeout(function(){ row.querySelector('.bar-fill').style.width = v+'%'; }, 100);
   });
 
   document.getElementById('dominant' + phase).textContent = '주된 감정: ' + data.dominant;
@@ -224,35 +244,59 @@ function renderResult(phase, data) {
 }
 
 function renderCompare(d1, d2) {
-  [['miniBar1',d1],['miniBar2',d2]].forEach(function(pair) {
-    var id = pair[0], data = pair[1];
+  [['miniBar1',d1],['miniBar2',d2]].forEach(function(pair){
+    var id=pair[0], data=pair[1];
     document.getElementById(id).innerHTML = Object.entries(data.emotions)
       .sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0})
       .map(function(e){
-        var n=e[0], v=e[1];
+        var n=e[0],v=e[1];
         return '<div class="mini-row"><div class="mini-label">'+n+'</div><div class="mini-track"><div class="mini-fill" style="background:'+EMO_COLORS[n]+';width:'+v+'%"></div></div><div class="mini-pct">'+v+'%</div></div>';
       }).join('');
   });
 
   var cb = document.getElementById('changeBars');
   cb.innerHTML = '';
-  ['슬픔','불안','그리움','죄책감','두려움','사랑','평온'].forEach(function(n) {
-    var v1 = d1.emotions[n]||0, v2 = d2.emotions[n]||0, diff = v2-v1;
+  var maxDiff = 0;
+  var changes = [];
+  ['슬픔','불안','그리움','죄책감','두려움','사랑','평온'].forEach(function(n){
+    var v1=d1.emotions[n]||0, v2=d2.emotions[n]||0, diff=v2-v1;
     if (v1===0 && v2===0) return;
-    var cls = 'badge-same', sign = '±0';
-    if (diff < 0) { cls = 'badge-down'; sign = diff + '%p'; }
-    else if (diff > 0) { cls = 'badge-up'; sign = '+' + diff + '%p'; }
-    cb.innerHTML += '<div class="change-row"><div class="change-label">'+n+'</div><span class="badge '+cls+'">'+sign+'</span></div>';
+    changes.push({name:n, diff:diff});
+    if (Math.abs(diff) > maxDiff) maxDiff = Math.abs(diff);
+  });
+
+  var scale = maxDiff > 0 ? 45 / maxDiff : 1;
+
+  changes.forEach(function(c){
+    var n=c.name, diff=c.diff;
+    var cls='val-same', sign='±0';
+    if (diff<0){cls='val-down';sign=diff+'%p';}
+    else if(diff>0){cls='val-up';sign='+'+diff+'%p';}
+
+    var barHtml = '';
+    if (diff < 0) {
+      var w = Math.abs(diff) * scale;
+      barHtml = '<div class="change-bar change-bar-neg" style="width:'+w+'%"></div>';
+    } else if (diff > 0) {
+      var w = diff * scale;
+      barHtml = '<div class="change-bar change-bar-pos" style="width:'+w+'%"></div>';
+    }
+
+    cb.innerHTML += '<div class="change-item">' +
+      '<div class="change-emo">'+n+'</div>' +
+      '<div class="change-bar-wrap"><div class="change-center"></div>'+barHtml+'</div>' +
+      '<div class="change-val '+cls+'">'+sign+'</div>' +
+      '</div>';
   });
 
   var neg = ['불안','두려움','죄책감','슬픔'];
-  var before = 0, after = 0;
-  neg.forEach(function(e){ before += (d1.emotions[e]||0); after += (d2.emotions[e]||0); });
+  var before=0, after=0;
+  neg.forEach(function(e){ before+=(d1.emotions[e]||0); after+=(d2.emotions[e]||0); });
   var diff = before - after;
 
   var msg;
   if (diff > 5) {
-    msg = '이완 후 불안·두려움 계열 감정이 ' + diff + '%p 줄어들었어요. 내 감정은 고정된 것이 아니라 내가 조절할 수 있는 대상이에요.';
+    msg = '이완 후 불안·두려움 계열 감정이 '+diff+'%p 줄어들었어요. 내 감정은 고정된 것이 아니라 내가 조절할 수 있는 대상이에요.';
   } else if (diff < -5) {
     msg = '이완 후에도 감정이 비슷하게 유지되고 있어요. 지금 느끼는 감정이 그만큼 깊다는 뜻이기도 해요. 이 감정을 천천히 들여다보는 것 자체가 중요한 과정이에요.';
   } else {
@@ -262,13 +306,13 @@ function renderCompare(d1, d2) {
 }
 
 function reset() {
-  ['text1','text2'].forEach(function(id){ document.getElementById(id).value = ''; });
+  ['text1','text2'].forEach(function(id){ document.getElementById(id).value=''; });
   document.getElementById('results1').classList.remove('visible');
   document.getElementById('compareSection').classList.remove('visible');
-  ['btn1','btn2'].forEach(function(id){ document.getElementById(id).disabled = false; });
+  ['btn1','btn2'].forEach(function(id){ document.getElementById(id).disabled=false; });
   document.getElementById('errorMsg').style.display = 'none';
-  result1 = null; result2 = null;
-  window.scrollTo(0, 0);
+  result1=null; result2=null;
+  window.scrollTo(0,0);
 }
 </script>
 </body>
