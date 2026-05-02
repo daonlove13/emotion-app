@@ -21,18 +21,23 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `다음 한국어 텍스트의 감정을 분석해서 JSON으로 반환해줘. 반드시 순수 JSON만 출력해. 백틱이나 설명 없이.
+            text: `You are an emotion analyzer. Analyze the following Korean text and return ONLY a JSON object with no other text, no markdown, no backticks.
 
-형식: {"emotions":{"슬픔":숫자,"불안":숫자,"그리움":숫자,"죄책감":숫자,"두려움":숫자,"사랑":숫자,"평온":숫자},"dominant":"가장높은감정","insight":"2문장설명"}
+The JSON must have this exact structure:
+{"emotions":{"슬픔":number,"불안":number,"그리움":number,"죄책감":number,"두려움":number,"사랑":number,"평온":number},"dominant":"name of highest emotion","insight":"2 sentences in Korean describing the emotions warmly from an externalization perspective"}
 
-규칙: 모든 감정 합계=100, 0인 감정도 포함
+Rules:
+- All emotion values must be integers
+- All values must sum to exactly 100
+- Include all 7 emotions even if 0
+- Output ONLY the JSON object, nothing else
 
-텍스트: ${text}`
+Text to analyze: ${text}`
           }]
         }],
         generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 300
+          temperature: 0.1,
+          maxOutputTokens: 400
         }
       })
     });
@@ -40,25 +45,31 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      return res.status(500).json({ error: data.error.message, code: data.error.code });
+      return res.status(500).json({ error: data.error.message });
     }
 
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     if (!raw) {
-      return res.status(500).json({ error: 'Empty response from Gemini', data: JSON.stringify(data).slice(0, 500) });
+      return res.status(500).json({ error: 'Empty response', debug: JSON.stringify(data).slice(0, 300) });
     }
 
-    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
-      return res.status(500).json({ error: 'JSON parse failed', raw: cleaned.slice(0, 300) });
+      return res.status(500).json({ error: 'No JSON found', debug: cleaned.slice(0, 300) });
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      return res.status(500).json({ error: 'JSON parse error', debug: jsonMatch[0].slice(0, 300) });
+    }
+
     return res.status(200).json(parsed);
   } catch (e) {
-    return res.status(500).json({ error: e.message, stack: e.stack?.slice(0, 200) });
+    return res.status(500).json({ error: e.message });
   }
 }
