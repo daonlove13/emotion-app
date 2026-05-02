@@ -21,23 +21,17 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `You are an emotion analyzer. Analyze the following Korean text and return ONLY a JSON object with no other text, no markdown, no backticks.
+            text: `Analyze emotions in this Korean text. Return ONLY a JSON object, no explanation.
 
-The JSON must have this exact structure:
-{"emotions":{"슬픔":number,"불안":number,"그리움":number,"죄책감":number,"두려움":number,"사랑":number,"평온":number},"dominant":"name of highest emotion","insight":"2 sentences in Korean describing the emotions warmly from an externalization perspective"}
+{"emotions":{"슬픔":int,"불안":int,"그리움":int,"죄책감":int,"두려움":int,"사랑":int,"평온":int},"dominant":"highest","insight":"2 Korean sentences"}
 
-Rules:
-- All emotion values must be integers
-- All values must sum to exactly 100
-- Include all 7 emotions even if 0
-- Output ONLY the JSON object, nothing else
-
-Text to analyze: ${text}`
+Sum must be 100. Text: ${text}`
           }]
         }],
         generationConfig: {
           temperature: 0.1,
-          maxOutputTokens: 400
+          maxOutputTokens: 400,
+          thinkingConfig: { thinkingBudget: 0 }
         }
       })
     });
@@ -48,24 +42,30 @@ Text to analyze: ${text}`
       return res.status(500).json({ error: data.error.message });
     }
 
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    if (!raw) {
-      return res.status(500).json({ error: 'Empty response', debug: JSON.stringify(data).slice(0, 300) });
+    var fullText = '';
+    var parts = data.candidates?.[0]?.content?.parts || [];
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i].text) {
+        fullText += parts[i].text;
+      }
     }
 
-    const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!fullText) {
+      return res.status(500).json({ error: 'Empty response' });
+    }
+
+    var cleaned = fullText.replace(/```json/g, '').replace(/```/g, '').trim();
+    var jsonMatch = cleaned.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
-      return res.status(500).json({ error: 'No JSON found', debug: cleaned.slice(0, 300) });
+      return res.status(500).json({ error: 'No JSON found', debug: cleaned.slice(0, 500) });
     }
 
-    let parsed;
+    var parsed;
     try {
       parsed = JSON.parse(jsonMatch[0]);
     } catch (e) {
-      return res.status(500).json({ error: 'JSON parse error', debug: jsonMatch[0].slice(0, 300) });
+      return res.status(500).json({ error: 'JSON parse error', debug: jsonMatch[0].slice(0, 500) });
     }
 
     return res.status(200).json(parsed);
