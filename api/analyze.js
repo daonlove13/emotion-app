@@ -10,6 +10,8 @@ export default async function handler(req, res) {
   if (!text) return res.status(400).json({ error: 'text is required' });
 
   const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   try {
@@ -19,23 +21,19 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `당신은 한국어 텍스트에서 감정을 분석하는 도구입니다.
-아래 텍스트의 감정을 분석하고 반드시 JSON만 반환하세요. 백틱, 설명, 마크다운 없이 순수한 JSON 객체만 출력하세요.
+            text: `다음 한국어 텍스트의 감정을 분석해서 JSON으로 반환해줘. 반드시 순수 JSON만 출력해. 백틱이나 설명 없이.
 
-형식:
-{"emotions":{"슬픔":정수,"불안":정수,"그리움":정수,"죄책감":정수,"두려움":정수,"사랑":정수,"평온":정수},"dominant":"가장 높은 감정","insight":"2문장으로 감정을 나와 분리해서 외재화 관점으로 따뜻하게 설명"}
+형식: {"emotions":{"슬픔":숫자,"불안":숫자,"그리움":숫자,"죄책감":숫자,"두려움":숫자,"사랑":숫자,"평온":숫자},"dominant":"가장높은감정","insight":"2문장설명"}
 
-규칙:
-- 모든 감정의 합은 반드시 100
-- 0인 감정도 포함
-- JSON 외 다른 텍스트 절대 금지
+규칙: 모든 감정 합계=100, 0인 감정도 포함
 
-분석할 텍스트: ${text}`
+텍스트: ${text}`
           }]
         }],
         generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 500
+          temperature: 0.2,
+          maxOutputTokens: 300,
+          responseMimeType: "application/json"
         }
       })
     });
@@ -43,20 +41,25 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
-      return res.status(500).json({ error: data.error.message || 'Gemini API error' });
+      return res.status(500).json({ error: data.error.message, code: data.error.code });
     }
 
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!raw) {
+      return res.status(500).json({ error: 'Empty response from Gemini', data: JSON.stringify(data).slice(0, 500) });
+    }
+
     const cleaned = raw.replace(/```json|```/g, '').trim();
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
-      return res.status(500).json({ error: 'Failed to parse response', raw: cleaned });
+      return res.status(500).json({ error: 'JSON parse failed', raw: cleaned.slice(0, 300) });
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
-    res.status(200).json(parsed);
+    return res.status(200).json(parsed);
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message, stack: e.stack?.slice(0, 200) });
   }
 }
