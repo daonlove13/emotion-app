@@ -55,21 +55,43 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .mini-fill{height:100%;border-radius:3px}
 .mini-pct{font-size:10px;color:#b4b2a9;width:24px;flex-shrink:0}
 
-/* 변화량 시각화 강화 */
-.change-item{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem;padding:0.5rem 0.625rem;border-radius:8px;background:#fafaf8}
-.change-emo{font-size:13px;color:#2c2c2a;width:50px;flex-shrink:0;text-align:right;font-weight:500}
-.change-bar-wrap{flex:1;display:flex;align-items:center;position:relative;height:20px}
-.change-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#d3d1c7}
-.change-bar{position:absolute;height:14px;border-radius:4px;top:3px;transition:width 0.6s ease}
-.change-bar-neg{right:50%;background:#1D9E75}
-.change-bar-pos{left:50%;background:#D85A30}
-.change-val{font-size:12px;font-weight:500;width:48px;flex-shrink:0;text-align:center;padding:3px 6px;border-radius:6px}
-.val-down{background:#e1f5ee;color:#085041}
-.val-up{background:#faece7;color:#993c1d}
-.val-same{background:#f1efe8;color:#888780}
+/* 핵심 요약 카드 */
+.summary-highlight{border-radius:10px;padding:1rem 1.125rem;margin-bottom:1.25rem;text-align:center}
+.summary-highlight.positive{background:#e1f5ee;border:1px solid #a8dfc8}
+.summary-highlight.negative{background:#faece7;border:1px solid #e8a08a}
+.summary-highlight.neutral{background:#f1efe8;border:1px solid #d3d1c7}
+.summary-number{font-size:28px;font-weight:500;margin-bottom:0.25rem}
+.summary-number.positive{color:#085041}
+.summary-number.negative{color:#993c1d}
+.summary-number.neutral{color:#5f5e5a}
+.summary-desc{font-size:13px;color:#5f5e5a;line-height:1.6}
+
+/* 감정 그룹 */
+.emo-group{margin-bottom:1.25rem}
+.emo-group-header{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.625rem;padding-bottom:0.375rem;border-bottom:0.5px solid #e8e6de}
+.emo-group-icon{font-size:13px}
+.emo-group-title{font-size:12px;font-weight:500;color:#5f5e5a}
+
+/* 변화 행 */
+.change-item{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;padding:0.4rem 0.5rem;border-radius:6px}
+.change-emo{font-size:13px;color:#2c2c2a;width:50px;flex-shrink:0;text-align:right}
+.change-bar-wrap{flex:1;height:16px;background:#f1efe8;border-radius:4px;overflow:hidden;position:relative}
+.change-bar-inner{height:100%;border-radius:4px;transition:width 0.6s ease;min-width:2px}
+.bar-good{background:#1D9E75}
+.bar-bad{background:#D85A30}
+.bar-neutral{background:#b4b2a9}
+.change-val{font-size:12px;font-weight:500;width:50px;flex-shrink:0;text-align:center;padding:2px 4px;border-radius:6px}
+.val-good{background:#e1f5ee;color:#085041}
+.val-bad{background:#faece7;color:#993c1d}
+.val-none{background:#f1efe8;color:#888780}
 
 .compare-summary{background:#f8f7f4;border:0.5px solid #d3d1c7;border-radius:8px;padding:1rem;font-size:13px;line-height:1.8;color:#5f5e5a;margin-top:1rem}
 .error-msg{background:#faece7;border:0.5px solid #e8a08a;border-radius:8px;padding:0.75rem 1rem;font-size:13px;color:#993c1d;margin-bottom:1rem;display:none}
+
+/* 범례 */
+.legend{display:flex;gap:1rem;justify-content:center;margin-bottom:1rem;font-size:11px;color:#888780}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-dot{width:10px;height:10px;border-radius:3px}
 
 @media (max-width:480px){
   body{padding:1.5rem 0.75rem}
@@ -84,6 +106,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
   .mini-label{width:34px;font-size:10px}
   .mini-pct{width:22px;font-size:10px}
   textarea{min-height:100px;font-size:13px}
+  .summary-number{font-size:24px}
 }
 </style>
 </head>
@@ -144,7 +167,14 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
         <div class="mini-card"><h4>이완 전</h4><div id="miniBar1"></div></div>
         <div class="mini-card"><h4>이완 후</h4><div id="miniBar2"></div></div>
       </div>
-      <div class="section-label" style="margin-top:0.5rem">감정 변화량</div>
+
+      <div id="summaryHighlight"></div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>긍정적 변화</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#D85A30"></div>부정적 변화</div>
+      </div>
+
       <div id="changeBars"></div>
       <div class="compare-summary" id="compareSummary"></div>
     </div>
@@ -159,6 +189,8 @@ var EMO_COLORS = {
   '슬픔':'#7F77DD','불안':'#D85A30','그리움':'#1D9E75',
   '죄책감':'#BA7517','두려움':'#D4537E','사랑':'#5DCAA5','평온':'#378ADD'
 };
+var NEG_EMOS = ['슬픔','불안','죄책감','두려움'];
+var POS_EMOS = ['사랑','평온','그리움'];
 var result1 = null, result2 = null;
 
 function showError(msg) {
@@ -188,9 +220,7 @@ function analyze(phase) {
   .then(function(parsed){
     if (parsed.error) throw new Error(parsed.error);
     if (!parsed.emotions || !parsed.dominant) throw new Error('분석 결과 형식이 올바르지 않아요.');
-
     document.getElementById('loading' + phase).style.display = 'none';
-
     if (phase === 1) {
       result1 = parsed;
       renderResult(1, parsed);
@@ -218,34 +248,35 @@ function renderResult(phase, data) {
   var cm = document.getElementById('colormap' + phase);
   cm.innerHTML = '';
   sorted.forEach(function(pair){
-    var n = pair[0], v = pair[1];
+    var n=pair[0], v=pair[1];
     var seg = document.createElement('div');
     seg.className = 'colormap-seg';
-    seg.style.cssText = 'width:' + (v/total*100).toFixed(1) + '%;background:' + (EMO_COLORS[n]||'#888780');
+    seg.style.cssText = 'width:'+(v/total*100).toFixed(1)+'%;background:'+(EMO_COLORS[n]||'#888780');
     cm.appendChild(seg);
   });
 
-  document.getElementById('colormapLabels' + phase).innerHTML =
-    sorted.map(function(pair){ var n=pair[0],v=pair[1]; return '<div class="emo-tag"><div class="emo-dot" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div><span>'+n+' '+v+'%</span></div>'; }).join('');
+  document.getElementById('colormapLabels'+phase).innerHTML =
+    sorted.map(function(pair){var n=pair[0],v=pair[1];return '<div class="emo-tag"><div class="emo-dot" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div><span>'+n+' '+v+'%</span></div>';}).join('');
 
-  var bars = document.getElementById('bars' + phase);
+  var bars = document.getElementById('bars'+phase);
   bars.innerHTML = '';
   sorted.forEach(function(pair){
-    var n=pair[0], v=pair[1];
+    var n=pair[0],v=pair[1];
     var row = document.createElement('div');
     row.className = 'bar-row';
     row.innerHTML = '<div class="bar-label">'+n+'</div><div class="bar-track"><div class="bar-fill" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div></div><div class="bar-pct">'+v+'%</div>';
     bars.appendChild(row);
-    setTimeout(function(){ row.querySelector('.bar-fill').style.width = v+'%'; }, 100);
+    setTimeout(function(){row.querySelector('.bar-fill').style.width=v+'%';},100);
   });
 
-  document.getElementById('dominant' + phase).textContent = '주된 감정: ' + data.dominant;
-  document.getElementById('insight' + phase).textContent = data.insight;
+  document.getElementById('dominant'+phase).textContent = '주된 감정: '+data.dominant;
+  document.getElementById('insight'+phase).textContent = data.insight;
 }
 
 function renderCompare(d1, d2) {
+  // 미니 바
   [['miniBar1',d1],['miniBar2',d2]].forEach(function(pair){
-    var id=pair[0], data=pair[1];
+    var id=pair[0],data=pair[1];
     document.getElementById(id).innerHTML = Object.entries(data.emotions)
       .sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0})
       .map(function(e){
@@ -254,50 +285,81 @@ function renderCompare(d1, d2) {
       }).join('');
   });
 
+  // 핵심 요약
+  var negBefore=0, negAfter=0, posBefore=0, posAfter=0;
+  NEG_EMOS.forEach(function(e){negBefore+=(d1.emotions[e]||0);negAfter+=(d2.emotions[e]||0);});
+  POS_EMOS.forEach(function(e){posBefore+=(d1.emotions[e]||0);posAfter+=(d2.emotions[e]||0);});
+  var negDiff = negBefore - negAfter;
+  var posDiff = posAfter - posBefore;
+
+  var sh = document.getElementById('summaryHighlight');
+  if (negDiff > 5) {
+    sh.innerHTML = '<div class="summary-highlight positive"><div class="summary-number positive">부정 감정 '+negDiff+'%p 감소</div><div class="summary-desc">이완 후 불안·두려움 계열 감정이 줄어들었어요</div></div>';
+  } else if (negDiff < -5) {
+    sh.innerHTML = '<div class="summary-highlight negative"><div class="summary-number negative">부정 감정 '+Math.abs(negDiff)+'%p 증가</div><div class="summary-desc">이완 후에도 감정이 유지되고 있어요</div></div>';
+  } else if (posDiff > 5) {
+    sh.innerHTML = '<div class="summary-highlight positive"><div class="summary-number positive">긍정 감정 '+posDiff+'%p 증가</div><div class="summary-desc">따뜻한 감정이 더 많이 느껴지고 있어요</div></div>';
+  } else {
+    sh.innerHTML = '<div class="summary-highlight neutral"><div class="summary-number neutral">감정 변화 미미</div><div class="summary-desc">감정 구성이 크게 변하지 않았어요</div></div>';
+  }
+
+  // 변화량 바 차트 (그룹별)
   var cb = document.getElementById('changeBars');
   cb.innerHTML = '';
+
   var maxDiff = 0;
-  var changes = [];
-  ['슬픔','불안','그리움','죄책감','두려움','사랑','평온'].forEach(function(n){
-    var v1=d1.emotions[n]||0, v2=d2.emotions[n]||0, diff=v2-v1;
-    if (v1===0 && v2===0) return;
-    changes.push({name:n, diff:diff});
-    if (Math.abs(diff) > maxDiff) maxDiff = Math.abs(diff);
+  var allEmos = NEG_EMOS.concat(POS_EMOS);
+  allEmos.forEach(function(n){
+    var diff = Math.abs((d2.emotions[n]||0) - (d1.emotions[n]||0));
+    if (diff > maxDiff) maxDiff = diff;
   });
+  var scale = maxDiff > 0 ? 80 / maxDiff : 1;
 
-  var scale = maxDiff > 0 ? 45 / maxDiff : 1;
+  function renderGroup(title, icon, emos, isNeg) {
+    var html = '<div class="emo-group">';
+    html += '<div class="emo-group-header"><span class="emo-group-icon">'+icon+'</span><span class="emo-group-title">'+title+'</span></div>';
 
-  changes.forEach(function(c){
-    var n=c.name, diff=c.diff;
-    var cls='val-same', sign='±0';
-    if (diff<0){cls='val-down';sign=diff+'%p';}
-    else if(diff>0){cls='val-up';sign='+'+diff+'%p';}
+    emos.forEach(function(n){
+      var v1=d1.emotions[n]||0, v2=d2.emotions[n]||0, diff=v2-v1;
+      if (v1===0 && v2===0) return;
 
-    var barHtml = '';
-    if (diff < 0) {
+      var isGood, barClass, valClass, sign;
+      if (diff === 0) {
+        isGood = null; barClass = 'bar-neutral'; valClass = 'val-none'; sign = '±0';
+      } else if (isNeg) {
+        // 부정 감정: 줄어들면 좋은 것
+        isGood = diff < 0;
+        barClass = isGood ? 'bar-good' : 'bar-bad';
+        valClass = isGood ? 'val-good' : 'val-bad';
+        sign = diff < 0 ? diff+'%p' : '+'+diff+'%p';
+      } else {
+        // 긍정 감정: 늘어나면 좋은 것
+        isGood = diff > 0;
+        barClass = isGood ? 'bar-good' : 'bar-bad';
+        valClass = isGood ? 'val-good' : 'val-bad';
+        sign = diff > 0 ? '+'+diff+'%p' : diff+'%p';
+      }
+
       var w = Math.abs(diff) * scale;
-      barHtml = '<div class="change-bar change-bar-neg" style="width:'+w+'%"></div>';
-    } else if (diff > 0) {
-      var w = diff * scale;
-      barHtml = '<div class="change-bar change-bar-pos" style="width:'+w+'%"></div>';
-    }
 
-    cb.innerHTML += '<div class="change-item">' +
-      '<div class="change-emo">'+n+'</div>' +
-      '<div class="change-bar-wrap"><div class="change-center"></div>'+barHtml+'</div>' +
-      '<div class="change-val '+cls+'">'+sign+'</div>' +
-      '</div>';
-  });
+      html += '<div class="change-item">';
+      html += '<div class="change-emo">'+n+'</div>';
+      html += '<div class="change-bar-wrap"><div class="change-bar-inner '+barClass+'" style="width:'+w+'%"></div></div>';
+      html += '<div class="change-val '+valClass+'">'+sign+'</div>';
+      html += '</div>';
+    });
 
-  var neg = ['불안','두려움','죄책감','슬픔'];
-  var before=0, after=0;
-  neg.forEach(function(e){ before+=(d1.emotions[e]||0); after+=(d2.emotions[e]||0); });
-  var diff = before - after;
+    html += '</div>';
+    return html;
+  }
 
+  cb.innerHTML = renderGroup('부정 감정','🔻',NEG_EMOS,true) + renderGroup('긍정 감정','🔺',POS_EMOS,false);
+
+  // 하단 메시지
   var msg;
-  if (diff > 5) {
-    msg = '이완 후 불안·두려움 계열 감정이 '+diff+'%p 줄어들었어요. 내 감정은 고정된 것이 아니라 내가 조절할 수 있는 대상이에요.';
-  } else if (diff < -5) {
+  if (negDiff > 5) {
+    msg = '이완 후 부정 감정이 '+negDiff+'%p 줄어들었어요. 내 감정은 고정된 것이 아니라 내가 조절할 수 있는 대상이에요.';
+  } else if (negDiff < -5) {
     msg = '이완 후에도 감정이 비슷하게 유지되고 있어요. 지금 느끼는 감정이 그만큼 깊다는 뜻이기도 해요. 이 감정을 천천히 들여다보는 것 자체가 중요한 과정이에요.';
   } else {
     msg = '이완 전후 감정 구성이 크게 다르지 않아요. 지금 느끼는 감정을 충분히 인식하고 있다는 신호일 수 있어요.';
@@ -306,12 +368,12 @@ function renderCompare(d1, d2) {
 }
 
 function reset() {
-  ['text1','text2'].forEach(function(id){ document.getElementById(id).value=''; });
+  ['text1','text2'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('results1').classList.remove('visible');
   document.getElementById('compareSection').classList.remove('visible');
-  ['btn1','btn2'].forEach(function(id){ document.getElementById(id).disabled=false; });
-  document.getElementById('errorMsg').style.display = 'none';
-  result1=null; result2=null;
+  ['btn1','btn2'].forEach(function(id){document.getElementById(id).disabled=false;});
+  document.getElementById('errorMsg').style.display='none';
+  result1=null;result2=null;
   window.scrollTo(0,0);
 }
 </script>
