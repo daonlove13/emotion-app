@@ -23,7 +23,7 @@ export default async function handler(req, res) {
           parts: [{
             text: `Analyze emotions in this Korean text. Return ONLY a JSON object, no explanation.
 
-{"emotions":{"슬픔":int,"불안":int,"그리움":int,"죄책감":int,"두려움":int,"사랑":int,"평온":int},"dominant":"highest","insight":"2 Korean sentences"}
+{"emotions":{"슬픔":int,"불안":int,"그리움":int,"죄책감":int,"두려움":int,"사랑":int,"평온":int},"dominant":"가장 높은 감정 이름을 한국어로","insight":"반드시 한국어로 2문장. 감정을 나와 분리해서 외재화 관점으로 따뜻하게 설명"}
 
 Sum must be 100. Text: ${text}`
           }]
