@@ -178,7 +178,17 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 
     <div class="card">
       <div class="section-label">부정 · 긍정 감정 변화</div>
-      <p style="font-size:12px;color:#888780;margin-bottom:1rem;line-height:1.6">날짜별 부정·긍정 감정 비율 변화예요.</p>
+      <p style="font-size:12px;color:#888780;margin-bottom:0.75rem;line-height:1.6">날짜별 부정·긍정 감정 비율 변화예요.</p>
+      <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px;background:#fdf5f5;border-radius:8px;padding:0.625rem 0.875rem;border:0.5px solid #e8d5d5">
+          <div style="font-size:10px;font-weight:500;color:#C97B7B;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.375rem">부정 감정</div>
+          <div style="font-size:12px;color:#5f5e5a;line-height:1.7">슬픔 · 불안 · 죄책감 · 두려움</div>
+        </div>
+        <div style="flex:1;min-width:140px;background:#f5fdf7;border-radius:8px;padding:0.625rem 0.875rem;border:0.5px solid #d5e8da">
+          <div style="font-size:10px;font-weight:500;color:#7BBF95;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.375rem">긍정 감정</div>
+          <div style="font-size:12px;color:#5f5e5a;line-height:1.7">사랑 · 평온 · 그리움</div>
+        </div>
+      </div>
       <div class="stacked-chart-wrap">
         <div class="stacked-chart" id="stackedChart"></div>
       </div>
@@ -211,7 +221,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 </div>
 
 <script>
-var EMO_COLORS={'슬픔':'#5B6EE8','불안':'#E8453C','그리움':'#00B894','죄책감':'#FDCB6E','두려움':'#E84393','사랑':'#00CEC9','평온':'#6C5CE7'};
+var EMO_COLORS={'슬픔':'#7B8FC4','불안':'#C47B7B','그리움':'#6BAF8A','죄책감':'#C4A96B','두려움':'#B87BA8','사랑':'#6BAFAF','평온':'#8A7BC4'};
 var NEG=['슬픔','불안','죄책감','두려움'];
 var POS=['사랑','평온','그리움'];
 var STORAGE_KEY='pet_loss_records';
