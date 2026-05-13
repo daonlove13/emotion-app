@@ -3,379 +3,403 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>감정 외재화 도구</title>
+<title>감정 기록 도구</title>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{overflow-x:hidden;width:100%}
-body{font-family:'Gowun Dodum',sans-serif;background:#f8f7f4;color:#2c2c2a;min-height:100vh;padding:2rem 1rem;overflow-x:hidden;width:100%}
+body{font-family:'Gowun Dodum',sans-serif;background:#f8f7f4;color:#2c2c2a;min-height:100vh;padding:2rem 1rem;overflow-x:hidden}
 .app{max-width:620px;margin:0 auto;width:100%}
 .header{margin-bottom:2rem}
 .header h1{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:300;margin-bottom:0.5rem;letter-spacing:-0.01em}
 .header p{font-size:14px;color:#888780;line-height:1.75}
 .card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;overflow:hidden}
 .section-label{font-size:11px;font-weight:500;color:#888780;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.875rem}
-textarea{width:100%;min-height:120px;padding:0.75rem 1rem;font-family:'Gowun Dodum',sans-serif;font-size:14px;line-height:1.8;border:0.5px solid #d3d1c7;border-radius:8px;background:#fff;color:#2c2c2a;resize:vertical;margin-bottom:1rem;-webkit-appearance:none}
+textarea{width:100%;min-height:130px;padding:0.75rem 1rem;font-family:'Gowun Dodum',sans-serif;font-size:14px;line-height:1.8;border:0.5px solid #d3d1c7;border-radius:8px;background:#fff;color:#2c2c2a;resize:vertical;margin-bottom:0.5rem;-webkit-appearance:none}
 textarea:focus{outline:none;border-color:#888780}
 textarea::placeholder{color:#b4b2a9}
-.btn-row{display:flex;gap:0.5rem}
+.char-count{font-size:11px;color:#b4b2a9;text-align:right;margin-bottom:1rem}
+.char-count.ok{color:#1D9E75}
+.btn-row{display:flex;gap:0.5rem;margin-top:0.5rem}
 button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13px;border-radius:8px;cursor:pointer;transition:all 0.15s;-webkit-appearance:none}
 .btn-primary{flex:1;background:#2c2c2a;color:#f8f7f4;border:none}
 .btn-primary:hover{background:#444441}
 .btn-primary:disabled{opacity:0.35;cursor:not-allowed}
 .btn-secondary{background:transparent;color:#888780;border:0.5px solid #d3d1c7}
 .btn-secondary:hover{background:#f1efe8}
-.loading{text-align:center;padding:2rem;font-size:13px;color:#888780;display:none}
-.dot::after{content:'';animation:dots 1.2s infinite}
-@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
-.results,.compare-section{display:none}
-.results.visible,.compare-section.visible{display:block;animation:fadeIn 0.4s ease}
+.btn-small{padding:0.5rem 1rem;font-size:12px}
+.hidden{display:none!important}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.colormap{height:48px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:0.75rem}
-.colormap-seg{height:100%;transition:width 0.6s ease}
-.colormap-labels{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem}
+.fade-in{animation:fadeIn 0.4s ease}
+
+/* 진행 바 */
+.progress-wrap{margin-bottom:1.5rem}
+.progress-days{display:flex;gap:0.4rem;margin-bottom:0.5rem}
+.day-dot{flex:1;height:8px;border-radius:4px;background:#e8e6de}
+.day-dot.done{background:#1D9E75}
+.day-dot.today{background:#378ADD}
+.progress-text{font-size:12px;color:#888780}
+.progress-text span{color:#2c2c2a;font-weight:500}
+
+/* 오늘 이미 기록 */
+.already-msg{background:#e1f5ee;border-radius:8px;padding:1rem;font-size:13px;color:#085041;line-height:1.75;margin-bottom:1rem}
+
+/* 오늘 결과 */
+.today-result{margin-top:1.25rem;animation:fadeIn 0.4s ease}
+.colormap{height:44px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:0.625rem}
+.colormap-seg{height:100%}
+.emo-labels{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
 .emo-tag{display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a}
 .emo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.bar-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem}
-.bar-label{font-size:13px;width:50px;flex-shrink:0;text-align:right}
-.bar-track{flex:1;height:7px;background:#f1efe8;border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;width:0;transition:width 0.8s ease}
-.bar-pct{font-size:12px;color:#888780;width:32px;flex-shrink:0}
-.insight-box{background:#f8f7f4;border-radius:8px;padding:1rem;margin-top:1.25rem;border:0.5px solid #d3d1c7}
-.insight-box .dominant{font-size:14px;margin-bottom:0.4rem}
+.bar-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem}
+.bar-label{font-size:12px;width:48px;flex-shrink:0;text-align:right;color:#2c2c2a}
+.bar-track{flex:1;height:6px;background:#f1efe8;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;width:0;transition:width 0.7s ease}
+.bar-pct{font-size:11px;color:#888780;width:28px;flex-shrink:0}
+.insight-box{background:#f8f7f4;border-radius:8px;padding:0.875rem 1rem;margin-top:1rem;border:0.5px solid #d3d1c7}
 .insight-box p{font-size:13px;line-height:1.8;color:#5f5e5a}
-.divider{border:none;border-top:0.5px solid #d3d1c7;margin:1.75rem 0}
-.relax-notice{background:#e1f5ee;border-radius:8px;padding:1rem;font-size:13px;color:#085041;line-height:1.8;margin-bottom:1.25rem}
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem}
-.mini-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:0.875rem}
-.mini-card h4{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem}
-.mini-row{display:flex;align-items:center;gap:0.3rem;margin-bottom:0.4rem}
-.mini-label{font-size:10px;color:#5f5e5a;width:38px;text-align:right;flex-shrink:0}
-.mini-track{flex:1;height:5px;background:#f1efe8;border-radius:3px;overflow:hidden}
-.mini-fill{height:100%;border-radius:3px}
-.mini-pct{font-size:10px;color:#b4b2a9;width:24px;flex-shrink:0}
 
-/* 핵심 요약 카드 */
-.summary-highlight{border-radius:10px;padding:1rem 1.125rem;margin-bottom:1.25rem;text-align:center}
-.summary-highlight.positive{background:#e1f5ee;border:1px solid #a8dfc8}
-.summary-highlight.negative{background:#faece7;border:1px solid #e8a08a}
-.summary-highlight.neutral{background:#f1efe8;border:1px solid #d3d1c7}
-.summary-number{font-size:28px;font-weight:500;margin-bottom:0.25rem}
-.summary-number.positive{color:#085041}
-.summary-number.negative{color:#993c1d}
-.summary-number.neutral{color:#5f5e5a}
-.summary-desc{font-size:13px;color:#5f5e5a;line-height:1.6}
+/* 코드 입력 */
+.code-section{margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid #e8e6de}
+.code-label{font-size:12px;color:#b4b2a9;margin-bottom:0.5rem;text-align:center}
+.code-input-wrap{display:flex;gap:0.5rem}
+.code-input{flex:1;padding:0.65rem 1rem;font-family:'Gowun Dodum',sans-serif;font-size:18px;letter-spacing:0.4em;text-align:center;border:0.5px solid #d3d1c7;border-radius:8px;background:#fff;color:#2c2c2a;-webkit-appearance:none}
+.code-input:focus{outline:none;border-color:#888780}
+.code-error{font-size:12px;color:#993c1d;margin-top:0.4rem;text-align:center;display:none}
 
-/* 감정 그룹 */
-.emo-group{margin-bottom:1.25rem}
-.emo-group-header{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.625rem;padding-bottom:0.375rem;border-bottom:0.5px solid #e8e6de}
-.emo-group-icon{font-size:13px}
-.emo-group-title{font-size:12px;font-weight:500;color:#5f5e5a}
-
-/* 변화 행 */
-.change-item{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;padding:0.4rem 0.5rem;border-radius:6px}
-.change-emo{font-size:13px;color:#2c2c2a;width:50px;flex-shrink:0;text-align:right}
-.change-bar-wrap{flex:1;height:16px;background:#f1efe8;border-radius:4px;overflow:hidden;position:relative}
-.change-bar-inner{height:100%;border-radius:4px;transition:width 0.6s ease;min-width:2px}
-.bar-good{background:#1D9E75}
-.bar-bad{background:#D85A30}
-.bar-neutral{background:#b4b2a9}
-.change-val{font-size:12px;font-weight:500;width:50px;flex-shrink:0;text-align:center;padding:2px 4px;border-radius:6px}
-.val-good{background:#e1f5ee;color:#085041}
-.val-bad{background:#faece7;color:#993c1d}
-.val-none{background:#f1efe8;color:#888780}
-
-.compare-summary{background:#f8f7f4;border:0.5px solid #d3d1c7;border-radius:8px;padding:1rem;font-size:13px;line-height:1.8;color:#5f5e5a;margin-top:1rem}
+/* 전체 결과 화면 */
+.result-section{display:none}
+.result-section.visible{display:block;animation:fadeIn 0.4s ease}
+.day-card{background:#fafaf8;border:0.5px solid #e8e6de;border-radius:8px;padding:0.875rem 1rem;margin-bottom:0.625rem}
+.day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem}
+.day-num{font-size:12px;color:#888780}
+.day-dominant{font-size:13px;font-weight:500;color:#2c2c2a}
+.day-colormap{height:10px;border-radius:5px;overflow:hidden;display:flex}
+.day-colormap-seg{height:100%}
+.trend-emo-row{margin-bottom:1.25rem}
+.trend-emo-label{font-size:12px;color:#5f5e5a;margin-bottom:0.375rem;display:flex;align-items:center;gap:6px}
+.trend-emo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.trend-bars{display:flex;gap:4px;align-items:flex-end;height:60px}
+.trend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.trend-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px}
+.trend-bar-label{font-size:9px;color:#b4b2a9}
+.summary-card{background:#f8f7f4;border:0.5px solid #d3d1c7;border-radius:10px;padding:1rem 1.125rem}
+.summary-card p{font-size:13px;line-height:1.8;color:#5f5e5a}
+.summary-card .hl{color:#2c2c2a;font-weight:500}
 .error-msg{background:#faece7;border:0.5px solid #e8a08a;border-radius:8px;padding:0.75rem 1rem;font-size:13px;color:#993c1d;margin-bottom:1rem;display:none}
 
-/* 범례 */
-.legend{display:flex;gap:1rem;justify-content:center;margin-bottom:1rem;font-size:11px;color:#888780}
-.legend-item{display:flex;align-items:center;gap:4px}
-.legend-dot{width:10px;height:10px;border-radius:3px}
-
-@media (max-width:480px){
+@media(max-width:480px){
   body{padding:1.5rem 0.75rem}
   .header h1{font-size:20px}
-  .header p{font-size:13px}
   .card{padding:1rem}
-  .compare-grid{grid-template-columns:1fr;gap:0.5rem}
-  .bar-label{width:44px;font-size:12px}
-  .bar-pct{width:28px;font-size:11px}
-  .change-emo{width:44px;font-size:12px}
-  .change-val{width:44px;font-size:11px}
-  .mini-label{width:34px;font-size:10px}
-  .mini-pct{width:22px;font-size:10px}
-  textarea{min-height:100px;font-size:13px}
-  .summary-number{font-size:24px}
+  textarea{min-height:110px;font-size:13px}
 }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <h1>감정 외재화 도구</h1>
-    <p>반려동물과의 이별에 대해 지금 느끼는 감정을 자유롭게 써주세요.<br>글 속에 담긴 감정을 분석해 시각화해드립니다.</p>
+    <h1>감정 기록 도구</h1>
+    <p>반려동물과의 건강한 이별 준비 프로그램</p>
   </div>
 
   <div class="error-msg" id="errorMsg"></div>
 
-  <div class="card">
-    <div class="section-label">지금 느끼는 감정을 써주세요</div>
-    <textarea id="text1" placeholder="예) 우리 초코가 벌써 12살이에요. 요즘 걸음이 느려진 걸 볼 때마다 마음이 아파요. 언젠가 이별할 생각을 하면 숨이 막히고, 그때 잘 보내줄 수 있을지 자신이 없어요."></textarea>
+  <!-- 메인 화면 -->
+  <div id="mainSection">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-days" id="progressDays"></div>
+        <div class="progress-text" id="progressText"></div>
+      </div>
+
+      <!-- 오늘 이미 기록한 경우 -->
+      <div id="alreadyMsg" class="already-msg hidden">
+        오늘은 이미 기록을 남기셨어요. 내일 다시 접속해 주세요 🌿
+      </div>
+
+      <!-- 기록 폼 -->
+      <div id="recordForm">
+        <div class="section-label">오늘의 감정을 기록해주세요</div>
+        <p style="font-size:13px;color:#5f5e5a;line-height:1.75;margin-bottom:1rem">1회기에서 나눴던 내용을 떠올리며, 반려동물과의 이별에 대해 지금 느끼는 감정을 자유롭게 써주세요.</p>
+        <textarea id="textInput" placeholder="오늘 반려동물을 생각했을 때 어떤 감정이 드셨나요? 떠오르는 생각이나 느낌을 자유롭게 적어주세요." oninput="countChars()"></textarea>
+        <div class="char-count" id="charCount">0 / 최소 50자</div>
+        <div class="btn-row">
+          <button class="btn-primary" id="recordBtn" onclick="submitRecord()">오늘 기록 저장하기</button>
+        </div>
+      </div>
+
+      <!-- 오늘 결과 (저장 직후 표시) -->
+      <div id="todayResult" class="today-result hidden">
+        <div class="section-label" style="margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid #e8e6de">오늘의 감정</div>
+        <div class="colormap" id="todayColormap"></div>
+        <div class="emo-labels" id="todayLabels"></div>
+        <div id="todayBars"></div>
+        <div class="insight-box">
+          <p id="todayInsight"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 코드 입력 -->
+    <div class="code-section">
+      <div class="code-label">2회기 진행자 코드 입력</div>
+      <div class="code-input-wrap">
+        <input type="number" class="code-input" id="codeInput" placeholder="ㆍㆍㆍㆍ">
+        <button class="btn-secondary btn-small" onclick="checkCode()">확인</button>
+      </div>
+      <div class="code-error" id="codeError">코드가 올바르지 않아요.</div>
+    </div>
+  </div>
+
+  <!-- 전체 결과 화면 -->
+  <div class="result-section" id="resultSection">
+    <div class="card">
+      <div class="section-label">일별 감정 기록</div>
+      <div id="dayCards"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">감정별 변화 추이</div>
+      <div id="trendWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">전체 요약</div>
+      <div id="weeklySummary" class="summary-card"></div>
+    </div>
+
     <div class="btn-row">
-      <button class="btn-primary" id="btn1" onclick="analyze(1)">감정 분석하기</button>
-    </div>
-  </div>
-
-  <div class="loading" id="loading1"><span class="dot">감정을 분석하는 중</span></div>
-
-  <div class="results" id="results1">
-    <div class="card">
-      <div class="section-label">감정 컬러맵</div>
-      <div class="colormap" id="colormap1"></div>
-      <div class="colormap-labels" id="colormapLabels1"></div>
-      <div class="section-label">감정 비율</div>
-      <div id="bars1"></div>
-      <div class="insight-box">
-        <p class="dominant" id="dominant1"></p>
-        <p id="insight1"></p>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="relax-notice">
-      잠깐 눈을 감고 천천히 숨을 들이쉬고 내쉬어 보세요. 3번 정도 반복한 뒤 같은 주제로 다시 한 번 써봐요. 감정이 어떻게 달라지는지 함께 확인해봐요.
-    </div>
-
-    <div class="card">
-      <div class="section-label">이완 후 감정 기록</div>
-      <textarea id="text2" placeholder="호흡을 가다듬은 후, 같은 감정을 다시 자유롭게 써주세요..."></textarea>
-      <div class="btn-row">
-        <button class="btn-primary" id="btn2" onclick="analyze(2)">이완 후 분석하기</button>
-        <button class="btn-secondary" onclick="reset()">처음부터</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="loading" id="loading2"><span class="dot">감정을 분석하는 중</span></div>
-
-  <div class="compare-section" id="compareSection">
-    <div class="card">
-      <div class="section-label">이완 전 · 후 비교</div>
-      <div class="compare-grid">
-        <div class="mini-card"><h4>이완 전</h4><div id="miniBar1"></div></div>
-        <div class="mini-card"><h4>이완 후</h4><div id="miniBar2"></div></div>
-      </div>
-
-      <div id="summaryHighlight"></div>
-
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>긍정적 변화</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#D85A30"></div>부정적 변화</div>
-      </div>
-
-      <div id="changeBars"></div>
-      <div class="compare-summary" id="compareSummary"></div>
-    </div>
-    <div class="btn-row" style="margin-top:0.5rem">
-      <button class="btn-secondary" onclick="reset()">다시 시작하기</button>
+      <button class="btn-secondary" onclick="closeResult()">돌아가기</button>
     </div>
   </div>
 </div>
 
 <script>
-var EMO_COLORS = {
-  '슬픔':'#7F77DD','불안':'#D85A30','그리움':'#1D9E75',
-  '죄책감':'#BA7517','두려움':'#D4537E','사랑':'#5DCAA5','평온':'#378ADD'
-};
-var NEG_EMOS = ['슬픔','불안','죄책감','두려움'];
-var POS_EMOS = ['사랑','평온','그리움'];
-var result1 = null, result2 = null;
+var EMO_COLORS={'슬픔':'#7F77DD','불안':'#D85A30','그리움':'#1D9E75','죄책감':'#BA7517','두려움':'#D4537E','사랑':'#5DCAA5','평온':'#378ADD'};
+var STORAGE_KEY='pet_loss_records';
 
-function showError(msg) {
-  var el = document.getElementById('errorMsg');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(function(){ el.style.display = 'none'; }, 5000);
+function getRecords(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return [];}}
+function saveRecords(r){localStorage.setItem(STORAGE_KEY,JSON.stringify(r));}
+function getTodayStr(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+
+function countChars(){
+  var len=document.getElementById('textInput').value.length;
+  var el=document.getElementById('charCount');
+  el.textContent=len+' / 최소 50자';
+  el.className='char-count'+(len>=50?' ok':'');
 }
 
-function analyze(phase) {
-  var text = document.getElementById('text' + phase).value.trim();
-  if (!text) { showError('감정을 먼저 써주세요.'); return; }
-  if (text.length < 5) { showError('조금 더 자세하게 써주세요.'); return; }
-
-  document.getElementById('errorMsg').style.display = 'none';
-  document.getElementById('btn' + phase).disabled = true;
-  document.getElementById('loading' + phase).style.display = 'block';
-  if (phase === 1) document.getElementById('results1').classList.remove('visible');
-  if (phase === 2) document.getElementById('compareSection').classList.remove('visible');
-
-  fetch('/api/analyze', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: text })
-  })
-  .then(function(res){ return res.json(); })
-  .then(function(parsed){
-    if (parsed.error) throw new Error(parsed.error);
-    if (!parsed.emotions || !parsed.dominant) throw new Error('분석 결과 형식이 올바르지 않아요.');
-    document.getElementById('loading' + phase).style.display = 'none';
-    if (phase === 1) {
-      result1 = parsed;
-      renderResult(1, parsed);
-      document.getElementById('results1').classList.add('visible');
-      document.getElementById('results1').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      result2 = parsed;
-      renderCompare(result1, result2);
-      document.getElementById('compareSection').classList.add('visible');
-      document.getElementById('compareSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  })
-  .catch(function(e){
-    document.getElementById('loading' + phase).style.display = 'none';
-    document.getElementById('btn' + phase).disabled = false;
-    showError('분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
-    console.error('Error:', e);
-  });
+function renderProgress(){
+  var records=getRecords();
+  var days=document.getElementById('progressDays');
+  var text=document.getElementById('progressText');
+  days.innerHTML='';
+  for(var i=0;i<7;i++){
+    var dot=document.createElement('div');
+    dot.className='day-dot';
+    if(i<records.length)dot.className+=' done';
+    else if(i===records.length)dot.className+=' today';
+    days.appendChild(dot);
+  }
+  text.innerHTML='<span>'+records.length+'/7일</span> 기록 완료';
 }
 
-function renderResult(phase, data) {
-  var sorted = Object.entries(data.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
-  var total = sorted.reduce(function(s,e){return s+e[1]}, 0) || 1;
+function initPage(){
+  var records=getRecords();
+  var today=getTodayStr();
+  var alreadyToday=records.length>0&&records[records.length-1].date===today;
+  renderProgress();
+  if(alreadyToday){
+    document.getElementById('alreadyMsg').classList.remove('hidden');
+    document.getElementById('recordForm').classList.add('hidden');
+    // 오늘 기록 결과 보여주기
+    var todayRecord=records[records.length-1];
+    showTodayResult(todayRecord);
+  }else{
+    document.getElementById('alreadyMsg').classList.add('hidden');
+    document.getElementById('recordForm').classList.remove('hidden');
+    document.getElementById('todayResult').classList.add('hidden');
+  }
+}
 
-  var cm = document.getElementById('colormap' + phase);
-  cm.innerHTML = '';
-  sorted.forEach(function(pair){
-    var n=pair[0], v=pair[1];
-    var seg = document.createElement('div');
-    seg.className = 'colormap-seg';
-    seg.style.cssText = 'width:'+(v/total*100).toFixed(1)+'%;background:'+(EMO_COLORS[n]||'#888780');
+function showError(msg){
+  var el=document.getElementById('errorMsg');
+  el.textContent=msg;
+  el.style.display='block';
+  setTimeout(function(){el.style.display='none';},4000);
+}
+
+function showTodayResult(data){
+  var sorted=Object.entries(data.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
+  var total=sorted.reduce(function(s,e){return s+e[1]},0)||1;
+
+  // 컬러맵
+  var cm=document.getElementById('todayColormap');
+  cm.innerHTML='';
+  sorted.forEach(function(e){
+    var seg=document.createElement('div');
+    seg.className='colormap-seg';
+    seg.style.cssText='width:'+(e[1]/total*100).toFixed(1)+'%;background:'+(EMO_COLORS[e[0]]||'#888780');
     cm.appendChild(seg);
   });
 
-  document.getElementById('colormapLabels'+phase).innerHTML =
-    sorted.map(function(pair){var n=pair[0],v=pair[1];return '<div class="emo-tag"><div class="emo-dot" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div><span>'+n+' '+v+'%</span></div>';}).join('');
+  // 라벨
+  document.getElementById('todayLabels').innerHTML=
+    sorted.map(function(e){return '<div class="emo-tag"><div class="emo-dot" style="background:'+(EMO_COLORS[e[0]]||'#888780')+'"></div><span>'+e[0]+' '+e[1]+'%</span></div>';}).join('');
 
-  var bars = document.getElementById('bars'+phase);
-  bars.innerHTML = '';
-  sorted.forEach(function(pair){
-    var n=pair[0],v=pair[1];
-    var row = document.createElement('div');
-    row.className = 'bar-row';
-    row.innerHTML = '<div class="bar-label">'+n+'</div><div class="bar-track"><div class="bar-fill" style="background:'+(EMO_COLORS[n]||'#888780')+'"></div></div><div class="bar-pct">'+v+'%</div>';
+  // 바 차트
+  var bars=document.getElementById('todayBars');
+  bars.innerHTML='';
+  sorted.forEach(function(e){
+    var row=document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML='<div class="bar-label">'+e[0]+'</div><div class="bar-track"><div class="bar-fill" style="background:'+(EMO_COLORS[e[0]]||'#888780')+'"></div></div><div class="bar-pct">'+e[1]+'%</div>';
     bars.appendChild(row);
-    setTimeout(function(){row.querySelector('.bar-fill').style.width=v+'%';},100);
+    setTimeout(function(fill,v){fill.style.width=v+'%';}(row.querySelector('.bar-fill'),e[1]),100);
   });
 
-  document.getElementById('dominant'+phase).textContent = '주된 감정: '+data.dominant;
-  document.getElementById('insight'+phase).textContent = data.insight;
+  // 인사이트
+  if(data.insight){
+    document.getElementById('todayInsight').textContent=data.insight;
+  }
+
+  document.getElementById('todayResult').classList.remove('hidden');
 }
 
-function renderCompare(d1, d2) {
-  // 미니 바
-  [['miniBar1',d1],['miniBar2',d2]].forEach(function(pair){
-    var id=pair[0],data=pair[1];
-    document.getElementById(id).innerHTML = Object.entries(data.emotions)
-      .sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0})
-      .map(function(e){
-        var n=e[0],v=e[1];
-        return '<div class="mini-row"><div class="mini-label">'+n+'</div><div class="mini-track"><div class="mini-fill" style="background:'+EMO_COLORS[n]+';width:'+v+'%"></div></div><div class="mini-pct">'+v+'%</div></div>';
-      }).join('');
+function submitRecord(){
+  var text=document.getElementById('textInput').value.trim();
+  if(text.length<50){showError('최소 50자 이상 작성해주세요.');return;}
+  var btn=document.getElementById('recordBtn');
+  btn.disabled=true;
+  btn.textContent='저장 중...';
+
+  fetch('/api/analyze',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text:text})
+  })
+  .then(function(res){return res.json();})
+  .then(function(parsed){
+    if(parsed.error)throw new Error(parsed.error);
+    var records=getRecords();
+    var newRecord={date:getTodayStr(),day:records.length+1,emotions:parsed.emotions,dominant:parsed.dominant,insight:parsed.insight};
+    records.push(newRecord);
+    saveRecords(records);
+    document.getElementById('textInput').value='';
+    document.getElementById('charCount').textContent='0 / 최소 50자';
+    document.getElementById('charCount').className='char-count';
+    btn.disabled=false;
+    btn.textContent='오늘 기록 저장하기';
+    // 폼 숨기고 결과 보여주기
+    document.getElementById('recordForm').classList.add('hidden');
+    document.getElementById('alreadyMsg').classList.remove('hidden');
+    showTodayResult(newRecord);
+    renderProgress();
+  })
+  .catch(function(e){
+    btn.disabled=false;
+    btn.textContent='오늘 기록 저장하기';
+    showError('오류가 발생했어요. 잠시 후 다시 시도해주세요.');
   });
-
-  // 핵심 요약
-  var negBefore=0, negAfter=0, posBefore=0, posAfter=0;
-  NEG_EMOS.forEach(function(e){negBefore+=(d1.emotions[e]||0);negAfter+=(d2.emotions[e]||0);});
-  POS_EMOS.forEach(function(e){posBefore+=(d1.emotions[e]||0);posAfter+=(d2.emotions[e]||0);});
-  var negDiff = negBefore - negAfter;
-  var posDiff = posAfter - posBefore;
-
-  var sh = document.getElementById('summaryHighlight');
-  if (negDiff > 5) {
-    sh.innerHTML = '<div class="summary-highlight positive"><div class="summary-number positive">부정 감정 '+negDiff+'%p 감소</div><div class="summary-desc">이완 후 불안·두려움 계열 감정이 줄어들었어요</div></div>';
-  } else if (negDiff < -5) {
-    sh.innerHTML = '<div class="summary-highlight negative"><div class="summary-number negative">부정 감정 '+Math.abs(negDiff)+'%p 증가</div><div class="summary-desc">이완 후에도 감정이 유지되고 있어요</div></div>';
-  } else if (posDiff > 5) {
-    sh.innerHTML = '<div class="summary-highlight positive"><div class="summary-number positive">긍정 감정 '+posDiff+'%p 증가</div><div class="summary-desc">따뜻한 감정이 더 많이 느껴지고 있어요</div></div>';
-  } else {
-    sh.innerHTML = '<div class="summary-highlight neutral"><div class="summary-number neutral">감정 변화 미미</div><div class="summary-desc">감정 구성이 크게 변하지 않았어요</div></div>';
-  }
-
-  // 변화량 바 차트 (그룹별)
-  var cb = document.getElementById('changeBars');
-  cb.innerHTML = '';
-
-  var maxDiff = 0;
-  var allEmos = NEG_EMOS.concat(POS_EMOS);
-  allEmos.forEach(function(n){
-    var diff = Math.abs((d2.emotions[n]||0) - (d1.emotions[n]||0));
-    if (diff > maxDiff) maxDiff = diff;
-  });
-  var scale = maxDiff > 0 ? 80 / maxDiff : 1;
-
-  function renderGroup(title, icon, emos, isNeg) {
-    var html = '<div class="emo-group">';
-    html += '<div class="emo-group-header"><span class="emo-group-icon">'+icon+'</span><span class="emo-group-title">'+title+'</span></div>';
-
-    emos.forEach(function(n){
-      var v1=d1.emotions[n]||0, v2=d2.emotions[n]||0, diff=v2-v1;
-      if (v1===0 && v2===0) return;
-
-      var isGood, barClass, valClass, sign;
-      if (diff === 0) {
-        isGood = null; barClass = 'bar-neutral'; valClass = 'val-none'; sign = '±0';
-      } else if (isNeg) {
-        // 부정 감정: 줄어들면 좋은 것
-        isGood = diff < 0;
-        barClass = isGood ? 'bar-good' : 'bar-bad';
-        valClass = isGood ? 'val-good' : 'val-bad';
-        sign = diff < 0 ? diff+'%p' : '+'+diff+'%p';
-      } else {
-        // 긍정 감정: 늘어나면 좋은 것
-        isGood = diff > 0;
-        barClass = isGood ? 'bar-good' : 'bar-bad';
-        valClass = isGood ? 'val-good' : 'val-bad';
-        sign = diff > 0 ? '+'+diff+'%p' : diff+'%p';
-      }
-
-      var w = Math.abs(diff) * scale;
-
-      html += '<div class="change-item">';
-      html += '<div class="change-emo">'+n+'</div>';
-      html += '<div class="change-bar-wrap"><div class="change-bar-inner '+barClass+'" style="width:'+w+'%"></div></div>';
-      html += '<div class="change-val '+valClass+'">'+sign+'</div>';
-      html += '</div>';
-    });
-
-    html += '</div>';
-    return html;
-  }
-
-  cb.innerHTML = renderGroup('부정 감정','🔻',NEG_EMOS,true) + renderGroup('긍정 감정','🔺',POS_EMOS,false);
-
-  // 하단 메시지
-  var msg;
-  if (negDiff > 5) {
-    msg = '이완 후 부정 감정이 '+negDiff+'%p 줄어들었어요. 내 감정은 고정된 것이 아니라 내가 조절할 수 있는 대상이에요.';
-  } else if (negDiff < -5) {
-    msg = '이완 후에도 감정이 비슷하게 유지되고 있어요. 지금 느끼는 감정이 그만큼 깊다는 뜻이기도 해요. 이 감정을 천천히 들여다보는 것 자체가 중요한 과정이에요.';
-  } else {
-    msg = '이완 전후 감정 구성이 크게 다르지 않아요. 지금 느끼는 감정을 충분히 인식하고 있다는 신호일 수 있어요.';
-  }
-  document.getElementById('compareSummary').textContent = msg;
 }
 
-function reset() {
-  ['text1','text2'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('results1').classList.remove('visible');
-  document.getElementById('compareSection').classList.remove('visible');
-  ['btn1','btn2'].forEach(function(id){document.getElementById(id).disabled=false;});
-  document.getElementById('errorMsg').style.display='none';
-  result1=null;result2=null;
+function checkCode(){
+  var code=document.getElementById('codeInput').value.trim();
+  var err=document.getElementById('codeError');
+
+  fetch('/api/verify',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({code:code})
+  })
+  .then(function(res){return res.json();})
+  .then(function(data){
+    if(data.success){
+      err.style.display='none';
+      showResult();
+    }else{
+      err.style.display='block';
+    }
+  })
+  .catch(function(){
+    err.style.display='block';
+  });
+}
+
+function showResult(){
+  var records=getRecords();
+  if(records.length===0){showError('아직 기록된 데이터가 없어요.');return;}
+  document.getElementById('mainSection').style.display='none';
+  var rs=document.getElementById('resultSection');
+  rs.style.display='block';
+  rs.classList.add('visible');
+  renderDayCards(records);
+  renderTrend(records);
+  renderSummary(records);
   window.scrollTo(0,0);
 }
+
+function renderDayCards(records){
+  var wrap=document.getElementById('dayCards');
+  wrap.innerHTML='';
+  records.forEach(function(r){
+    var sorted=Object.entries(r.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
+    var total=sorted.reduce(function(s,e){return s+e[1]},0)||1;
+    var cm=sorted.map(function(e){return '<div class="day-colormap-seg" style="width:'+(e[1]/total*100).toFixed(1)+'%;background:'+(EMO_COLORS[e[0]]||'#888780')+'"></div>';}).join('');
+    wrap.innerHTML+='<div class="day-card"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div></div>';
+  });
+}
+
+function renderTrend(records){
+  var wrap=document.getElementById('trendWrap');
+  wrap.innerHTML='';
+  var emos=['슬픔','불안','그리움','죄책감','두려움','사랑','평온'];
+  emos.forEach(function(emo){
+    var vals=records.map(function(r){return r.emotions[emo]||0;});
+    if(!vals.some(function(v){return v>0;}))return;
+    var maxVal=Math.max.apply(null,vals)||1;
+    var bars=vals.map(function(v,i){
+      var h=Math.max((v/maxVal*54),2);
+      return '<div class="trend-bar-wrap"><div class="trend-bar" style="height:'+h+'px;background:'+(EMO_COLORS[emo]||'#888780')+'"></div><div class="trend-bar-label">'+(i+1)+'일</div></div>';
+    }).join('');
+    wrap.innerHTML+='<div class="trend-emo-row"><div class="trend-emo-label"><div class="trend-emo-dot" style="background:'+(EMO_COLORS[emo]||'#888780')+'"></div>'+emo+'</div><div class="trend-bars">'+bars+'</div></div>';
+  });
+}
+
+function renderSummary(records){
+  var emos=['슬픔','불안','그리움','죄책감','두려움','사랑','평온'];
+  var totals={};
+  emos.forEach(function(e){totals[e]=0;});
+  records.forEach(function(r){emos.forEach(function(e){totals[e]+=(r.emotions[e]||0);});});
+  var top3=Object.entries(totals).sort(function(a,b){return b[1]-a[1]}).slice(0,3).filter(function(e){return e[1]>0});
+  var top3text=top3.map(function(e){return '<span class="hl">'+e[0]+'</span>';}).join(', ');
+
+  var changeText='';
+  if(records.length>=2){
+    var neg=['슬픔','불안','죄책감','두려움'];
+    var first=neg.reduce(function(s,e){return s+(records[0].emotions[e]||0);},0);
+    var last=neg.reduce(function(s,e){return s+(records[records.length-1].emotions[e]||0);},0);
+    var diff=first-last;
+    if(diff>10)changeText='<p style="margin-top:0.5rem">첫날에 비해 부정 감정이 <span class="hl">'+diff+'%p 감소</span>했어요.</p>';
+    else if(diff<-10)changeText='<p style="margin-top:0.5rem">첫날에 비해 부정 감정이 <span class="hl">'+Math.abs(diff)+'%p 증가</span>했어요.</p>';
+    else changeText='<p style="margin-top:0.5rem">전체적으로 감정 변화가 <span class="hl">안정적</span>이었어요.</p>';
+  }
+  document.getElementById('weeklySummary').innerHTML='<p>가장 많이 느낀 감정은 '+top3text+' 이에요.</p>'+changeText;
+}
+
+function closeResult(){
+  document.getElementById('resultSection').classList.remove('visible');
+  document.getElementById('resultSection').style.display='none';
+  document.getElementById('mainSection').style.display='block';
+  document.getElementById('codeInput').value='';
+  window.scrollTo(0,0);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  initPage();
+  document.getElementById('codeInput').addEventListener('keydown',function(e){if(e.key==='Enter')checkCode();});
+});
 </script>
 </body>
 </html>
