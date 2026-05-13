@@ -74,9 +74,10 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem}
 .day-num{font-size:12px;color:#888780}
 .day-dominant{font-size:13px;font-weight:500;color:#2c2c2a}
-.day-colormap{height:12px;border-radius:6px;overflow:hidden;display:flex}
+.day-colormap{height:20px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:0.5rem}
 .day-colormap-seg{height:100%}
-.day-text{font-size:12px;color:#5f5e5a;line-height:1.7;margin-top:0.75rem;padding-top:0.625rem;border-top:0.5px solid #e8e6de;display:none}
+.day-top3{font-size:12px;color:#5f5e5a;line-height:1.6;margin-bottom:0.25rem}
+.day-text{font-size:12px;color:#5f5e5a;line-height:1.7;margin-top:0.625rem;padding-top:0.625rem;border-top:0.5px solid #e8e6de;display:none}
 .day-text.open{display:block;animation:fadeIn 0.2s ease}
 .day-toggle{font-size:10px;color:#b4b2a9;margin-top:0.375rem;text-align:right}
 
@@ -362,11 +363,22 @@ function renderDayCards(records){
     var cm=sorted.map(function(e){
       return '<div class="day-colormap-seg" style="width:'+(e[1]/total*100).toFixed(1)+'%;background:'+EMO_COLORS[e[0]]+'"></div>';
     }).join('');
-    var emoLegend=sorted.map(function(e){
-      return '<div class="emo-tag"><div class="emo-dot" style="background:'+EMO_COLORS[e[0]]+'"></div><span>'+e[0]+' '+e[1]+'%</span></div>';
+
+    // 상위 3개만 한 줄로
+    var top3=sorted.slice(0,3).map(function(e){
+      return '<span style="display:inline-flex;align-items:center;gap:3px;margin-right:8px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+EMO_COLORS[e[0]]+'"></span><span>'+e[0]+' '+e[1]+'%</span></span>';
     }).join('');
-    var textHtml=r.text?'<div class="day-text" id="daytext-'+idx+'">'+r.text+'</div><div class="day-toggle" id="daytoggle-'+idx+'">▼ 원문 보기</div>':'';
-    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div><div class="emo-labels" style="margin-top:0.5rem;margin-bottom:0">'+emoLegend+'</div>'+textHtml+'</div>';
+
+    // 전체 비율 (원문 펼칠 때)
+    var allEmo=sorted.map(function(e){
+      return '<span style="display:inline-flex;align-items:center;gap:3px;margin-right:8px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+EMO_COLORS[e[0]]+'"></span><span>'+e[0]+' '+e[1]+'%</span></span>';
+    }).join('');
+
+    var textHtml=r.text
+      ?'<div class="day-text" id="daytext-'+idx+'"><div style="font-size:11px;color:#888780;margin-bottom:0.375rem">전체 감정 비율</div><div style="font-size:12px;color:#5f5e5a;line-height:2;margin-bottom:0.625rem">'+allEmo+'</div><div style="font-size:12px;color:#5f5e5a;line-height:1.7;padding-top:0.5rem;border-top:0.5px solid #e8e6de">'+r.text+'</div></div><div class="day-toggle" id="daytoggle-'+idx+'">▼ 원문 · 상세 보기</div>'
+      :'';
+
+    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div><div class="day-top3">'+top3+'</div>'+textHtml+'</div>';
   });
 }
 
