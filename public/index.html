@@ -81,16 +81,16 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .day-toggle{font-size:10px;color:#b4b2a9;margin-top:0.375rem;text-align:right}
 
 /* 누적 막대 - 부정/긍정 두 색만 */
-.stacked-chart-wrap{margin-bottom:0.75rem}
-.stacked-chart{display:flex;gap:8px;align-items:flex-end;height:140px;padding-bottom:28px;position:relative}
+.stacked-chart-wrap{margin-bottom:0.75rem;overflow:hidden}
+.stacked-chart{display:flex;gap:8px;align-items:flex-end;height:160px;padding-bottom:24px;position:relative;overflow:hidden}
 .stacked-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;height:100%}
-.stacked-bar{width:100%;display:flex;flex-direction:column-reverse;border-radius:6px 6px 0 0;overflow:hidden;position:absolute;bottom:22px}
-.stacked-seg-neg{background:#E05555}
-.stacked-seg-pos{background:#2ECC71}
-.stacked-label{position:absolute;bottom:0;font-size:10px;color:#888780;text-align:center;width:100%}
-.stacked-legend{display:flex;gap:1rem;justify-content:center;margin-top:0.5rem}
-.stacked-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a}
-.legend-rect{width:12px;height:12px;border-radius:3px}
+.stacked-bar{width:100%;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden;position:absolute;bottom:20px}
+.stacked-seg-neg{background:#C97B7B}
+.stacked-seg-pos{background:#7BBF95}
+.stacked-label{position:absolute;bottom:2px;font-size:10px;color:#888780;text-align:center;width:100%}
+.stacked-legend{display:flex;gap:1.25rem;justify-content:center;margin-top:0.5rem}
+.stacked-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#5f5e5a;white-space:nowrap}
+.legend-rect{width:10px;height:10px;border-radius:2px}
 
 /* 꺾은선 그래프 */
 .line-chart-wrap{overflow-x:auto;margin-bottom:0.75rem}
@@ -183,8 +183,8 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
         <div class="stacked-chart" id="stackedChart"></div>
       </div>
       <div class="stacked-legend">
-        <div class="stacked-legend-item"><div class="legend-rect" style="background:#E05555"></div>부정 감정 (슬픔·불안·죄책감·두려움)</div>
-        <div class="stacked-legend-item"><div class="legend-rect" style="background:#2ECC71"></div>긍정 감정 (사랑·평온·그리움)</div>
+        <div class="stacked-legend-item"><div class="legend-rect" style="background:#C97B7B"></div>부정 감정</div>
+        <div class="stacked-legend-item"><div class="legend-rect" style="background:#7BBF95"></div>긍정 감정</div>
       </div>
     </div>
 
@@ -352,8 +352,11 @@ function renderDayCards(records){
     var cm=sorted.map(function(e){
       return '<div class="day-colormap-seg" style="width:'+(e[1]/total*100).toFixed(1)+'%;background:'+EMO_COLORS[e[0]]+'"></div>';
     }).join('');
+    var emoLegend=sorted.map(function(e){
+      return '<div class="emo-tag"><div class="emo-dot" style="background:'+EMO_COLORS[e[0]]+'"></div><span>'+e[0]+' '+e[1]+'%</span></div>';
+    }).join('');
     var textHtml=r.text?'<div class="day-text" id="daytext-'+idx+'">'+r.text+'</div><div class="day-toggle" id="daytoggle-'+idx+'">▼ 원문 보기</div>':'';
-    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div>'+textHtml+'</div>';
+    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div><div class="emo-labels" style="margin-top:0.5rem;margin-bottom:0">'+emoLegend+'</div>'+textHtml+'</div>';
   });
 }
 
