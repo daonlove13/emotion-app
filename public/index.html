@@ -69,21 +69,24 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .result-section.visible{display:block;animation:fadeIn 0.4s ease}
 
 /* 일별 기록 */
-.day-card{background:#fafaf8;border:0.5px solid #e8e6de;border-radius:8px;padding:0.875rem 1rem;margin-bottom:0.625rem}
+.day-card{background:#fafaf8;border:0.5px solid #e8e6de;border-radius:8px;padding:0.875rem 1rem;margin-bottom:0.625rem;cursor:pointer;transition:background 0.15s}
+.day-card:hover{background:#f3f1ea}
 .day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem}
 .day-num{font-size:12px;color:#888780}
 .day-dominant{font-size:13px;font-weight:500;color:#2c2c2a}
-.day-colormap{height:10px;border-radius:5px;overflow:hidden;display:flex}
+.day-colormap{height:12px;border-radius:6px;overflow:hidden;display:flex}
 .day-colormap-seg{height:100%}
-.day-text{font-size:12px;color:#888780;line-height:1.6;margin-top:0.625rem;padding-top:0.5rem;border-top:0.5px solid #e8e6de}
+.day-text{font-size:12px;color:#5f5e5a;line-height:1.7;margin-top:0.75rem;padding-top:0.625rem;border-top:0.5px solid #e8e6de;display:none}
+.day-text.open{display:block;animation:fadeIn 0.2s ease}
+.day-toggle{font-size:10px;color:#b4b2a9;margin-top:0.375rem;text-align:right}
 
 /* 누적 막대 - 부정/긍정 두 색만 */
 .stacked-chart-wrap{margin-bottom:0.75rem}
 .stacked-chart{display:flex;gap:8px;align-items:flex-end;height:140px;padding-bottom:28px;position:relative}
 .stacked-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;height:100%}
 .stacked-bar{width:100%;display:flex;flex-direction:column-reverse;border-radius:6px 6px 0 0;overflow:hidden;position:absolute;bottom:22px}
-.stacked-seg-neg{background:#D85A30}
-.stacked-seg-pos{background:#1D9E75}
+.stacked-seg-neg{background:#E05555}
+.stacked-seg-pos{background:#2ECC71}
 .stacked-label{position:absolute;bottom:0;font-size:10px;color:#888780;text-align:center;width:100%}
 .stacked-legend{display:flex;gap:1rem;justify-content:center;margin-top:0.5rem}
 .stacked-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#5f5e5a}
@@ -175,13 +178,13 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 
     <div class="card">
       <div class="section-label">부정 · 긍정 감정 변화</div>
-      <p style="font-size:12px;color:#888780;margin-bottom:1rem;line-height:1.6">슬픔·불안·죄책감·두려움을 <span style="color:#D85A30;font-weight:500">부정 감정</span>으로, 사랑·평온·그리움을 <span style="color:#1D9E75;font-weight:500">긍정 감정</span>으로 묶어 변화를 확인해요.</p>
+      <p style="font-size:12px;color:#888780;margin-bottom:1rem;line-height:1.6">날짜별 부정·긍정 감정 비율 변화예요.</p>
       <div class="stacked-chart-wrap">
         <div class="stacked-chart" id="stackedChart"></div>
       </div>
       <div class="stacked-legend">
-        <div class="stacked-legend-item"><div class="legend-rect" style="background:#D85A30"></div>부정 감정</div>
-        <div class="stacked-legend-item"><div class="legend-rect" style="background:#1D9E75"></div>긍정 감정</div>
+        <div class="stacked-legend-item"><div class="legend-rect" style="background:#E05555"></div>부정 감정 (슬픔·불안·죄책감·두려움)</div>
+        <div class="stacked-legend-item"><div class="legend-rect" style="background:#2ECC71"></div>긍정 감정 (사랑·평온·그리움)</div>
       </div>
     </div>
 
@@ -189,7 +192,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
       <div class="section-label">주요 감정 변화 추이</div>
       <p class="chart-note" style="margin-bottom:0.75rem">변화폭이 큰 감정 상위 3개를 보여줍니다.</p>
       <div class="line-chart-wrap">
-        <svg class="line-chart-svg" id="lineChart" viewBox="0 0 540 180" preserveAspectRatio="xMidYMid meet"></svg>
+        <svg class="line-chart-svg" id="lineChart" viewBox="0 0 540 220" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
       <div class="line-legend" id="lineLegend"></div>
     </div>
@@ -208,7 +211,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 </div>
 
 <script>
-var EMO_COLORS={'슬픔':'#7F77DD','불안':'#D85A30','그리움':'#1D9E75','죄책감':'#BA7517','두려움':'#D4537E','사랑':'#5DCAA5','평온':'#378ADD'};
+var EMO_COLORS={'슬픔':'#5B6EE8','불안':'#E8453C','그리움':'#00B894','죄책감':'#FDCB6E','두려움':'#E84393','사랑':'#00CEC9','평온':'#6C5CE7'};
 var NEG=['슬픔','불안','죄책감','두려움'];
 var POS=['사랑','평온','그리움'];
 var STORAGE_KEY='pet_loss_records';
@@ -343,14 +346,14 @@ function showResult(){
 
 function renderDayCards(records){
   var wrap=document.getElementById('dayCards');wrap.innerHTML='';
-  records.forEach(function(r){
+  records.forEach(function(r,idx){
     var sorted=Object.entries(r.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
     var total=sorted.reduce(function(s,e){return s+e[1]},0)||1;
     var cm=sorted.map(function(e){
       return '<div class="day-colormap-seg" style="width:'+(e[1]/total*100).toFixed(1)+'%;background:'+EMO_COLORS[e[0]]+'"></div>';
     }).join('');
-    var textHtml=r.text?'<div class="day-text">'+r.text+'</div>':'';
-    wrap.innerHTML+='<div class="day-card"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div>'+textHtml+'</div>';
+    var textHtml=r.text?'<div class="day-text" id="daytext-'+idx+'">'+r.text+'</div><div class="day-toggle" id="daytoggle-'+idx+'">▼ 원문 보기</div>':'';
+    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div>'+textHtml+'</div>';
   });
 }
 
@@ -390,7 +393,7 @@ function renderLineChart(records){
   var svg=document.getElementById('lineChart');svg.innerHTML='';
   if(records.length<2)return;
 
-  var W=540,H=180,padL=32,padR=12,padT=12,padB=28;
+  var W=540,H=220,padL=36,padR=16,padT=16,padB=36;
   var chartW=W-padL-padR,chartH=H-padT-padB;
   var n=records.length;
 
@@ -405,27 +408,35 @@ function renderLineChart(records){
   variances.sort(function(a,b){return b.variance-a.variance;});
   var top3=variances.slice(0,3);
 
-  // 그리드
+  // 배경
+  var bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  bg.setAttribute('x',padL);bg.setAttribute('y',padT);
+  bg.setAttribute('width',chartW);bg.setAttribute('height',chartH);
+  bg.setAttribute('fill','#fafaf8');bg.setAttribute('rx','6');
+  svg.appendChild(bg);
+
+  // 그리드 (5줄 → 4줄로 줄임)
   for(var g=0;g<=4;g++){
     var y=padT+chartH*(1-g/4);
     var line=document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',padL);line.setAttribute('y1',y);
     line.setAttribute('x2',W-padR);line.setAttribute('y2',y);
-    line.setAttribute('stroke','#e8e6de');line.setAttribute('stroke-width','0.5');
+    line.setAttribute('stroke', g===0||g===4 ? '#d3d1c7' : '#e8e6de');
+    line.setAttribute('stroke-width','0.5');
     svg.appendChild(line);
     var txt=document.createElementNS('http://www.w3.org/2000/svg','text');
-    txt.setAttribute('x',padL-4);txt.setAttribute('y',y+4);
-    txt.setAttribute('text-anchor','end');txt.setAttribute('font-size','9');
+    txt.setAttribute('x',padL-6);txt.setAttribute('y',y+4);
+    txt.setAttribute('text-anchor','end');txt.setAttribute('font-size','10');
     txt.setAttribute('fill','#b4b2a9');txt.textContent=g*25+'%';
     svg.appendChild(txt);
   }
 
-  // x축
+  // x축 레이블
   for(var d=0;d<n;d++){
     var x=padL+d*(chartW/(n>1?n-1:1));
     var xt=document.createElementNS('http://www.w3.org/2000/svg','text');
-    xt.setAttribute('x',x);xt.setAttribute('y',H-padB+16);
-    xt.setAttribute('text-anchor','middle');xt.setAttribute('font-size','9');
+    xt.setAttribute('x',x);xt.setAttribute('y',H-padB+20);
+    xt.setAttribute('text-anchor','middle');xt.setAttribute('font-size','10');
     xt.setAttribute('fill','#888780');xt.textContent=(d+1)+'일';
     svg.appendChild(xt);
   }
@@ -443,7 +454,7 @@ function renderLineChart(records){
     var pl=document.createElementNS('http://www.w3.org/2000/svg','polyline');
     pl.setAttribute('points',points);pl.setAttribute('fill','none');
     pl.setAttribute('stroke',EMO_COLORS[emo]);pl.setAttribute('stroke-width','1');
-    pl.setAttribute('stroke-opacity','0.2');pl.setAttribute('stroke-dasharray','4,3');
+    pl.setAttribute('stroke-opacity','0.15');pl.setAttribute('stroke-dasharray','4,3');
     svg.appendChild(pl);
   });
 
@@ -458,15 +469,15 @@ function renderLineChart(records){
     }).join(' ');
     var pl=document.createElementNS('http://www.w3.org/2000/svg','polyline');
     pl.setAttribute('points',points);pl.setAttribute('fill','none');
-    pl.setAttribute('stroke',EMO_COLORS[emo]);pl.setAttribute('stroke-width','2.5');
+    pl.setAttribute('stroke',EMO_COLORS[emo]);pl.setAttribute('stroke-width','3');
     pl.setAttribute('stroke-linejoin','round');pl.setAttribute('stroke-linecap','round');
     svg.appendChild(pl);
     vals.forEach(function(v,i){
       var x=padL+i*(chartW/(n>1?n-1:1));
       var y=padT+chartH*(1-v/100);
       var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-      c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r','3.5');
-      c.setAttribute('fill',EMO_COLORS[emo]);c.setAttribute('stroke','#fff');c.setAttribute('stroke-width','1.5');
+      c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r','4');
+      c.setAttribute('fill',EMO_COLORS[emo]);c.setAttribute('stroke','#fff');c.setAttribute('stroke-width','2');
       svg.appendChild(c);
     });
     legend.innerHTML+='<div class="line-legend-item"><div class="line-legend-dot" style="background:'+EMO_COLORS[emo]+'"></div><span>'+emo+'</span></div>';
@@ -495,6 +506,19 @@ function fetchInterpret(records){
       '</div>';
   })
   .catch(function(){area.innerHTML='<p style="font-size:13px;color:#888780;padding:0.5rem">해석을 불러오지 못했어요.</p>';});
+}
+
+function toggleDayText(idx){
+  var text=document.getElementById('daytext-'+idx);
+  var toggle=document.getElementById('daytoggle-'+idx);
+  if(!text)return;
+  if(text.classList.contains('open')){
+    text.classList.remove('open');
+    toggle.textContent='▼ 원문 보기';
+  }else{
+    text.classList.add('open');
+    toggle.textContent='▲ 접기';
+  }
 }
 
 function closeResult(){
