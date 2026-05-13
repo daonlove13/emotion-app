@@ -250,7 +250,7 @@ function renderProgress(){
     else if(i===records.length)dot.className+=' today';
     days.appendChild(dot);
   }
-  text.innerHTML='<span>'+records.length+'/7일</span> 기록 완료';
+  text.innerHTML='<span>'+records.length+'/7회차</span> 기록 완료';
 }
 
 function initPage(){
@@ -378,7 +378,7 @@ function renderDayCards(records){
       ?'<div class="day-text" id="daytext-'+idx+'"><div style="font-size:11px;color:#888780;margin-bottom:0.375rem">전체 감정 비율</div><div style="font-size:12px;color:#5f5e5a;line-height:2;margin-bottom:0.625rem">'+allEmo+'</div><div style="font-size:12px;color:#5f5e5a;line-height:1.7;padding-top:0.5rem;border-top:0.5px solid #e8e6de">'+r.text+'</div></div><div class="day-toggle" id="daytoggle-'+idx+'">▼ 원문 · 상세 보기</div>'
       :'';
 
-    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div><div class="day-top3">'+top3+'</div>'+textHtml+'</div>';
+    wrap.innerHTML+='<div class="day-card" onclick="toggleDayText('+idx+')"><div class="day-card-header"><span class="day-num">'+r.day+'회차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div><div class="day-top3">'+top3+'</div>'+textHtml+'</div>';
   });
 }
 
@@ -408,7 +408,7 @@ function renderStackedChart(records){
     bar.appendChild(negSeg);
 
     var label=document.createElement('div');label.className='stacked-label';
-    label.textContent=(i+1)+'일';
+    label.textContent=(i+1)+'회';
     barWrap.appendChild(bar);barWrap.appendChild(label);
     wrap.appendChild(barWrap);
   });
@@ -462,7 +462,7 @@ function renderLineChart(records){
     var xt=document.createElementNS('http://www.w3.org/2000/svg','text');
     xt.setAttribute('x',x);xt.setAttribute('y',H-padB+20);
     xt.setAttribute('text-anchor','middle');xt.setAttribute('font-size','10');
-    xt.setAttribute('fill','#888780');xt.textContent=(d+1)+'일';
+    xt.setAttribute('fill','#888780');xt.textContent=(d+1)+'회';
     svg.appendChild(xt);
   }
 
