@@ -30,7 +30,6 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .btn-small{padding:0.5rem 1rem;font-size:12px}
 .hidden{display:none!important}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeIn 0.4s ease}
 
 /* 진행 바 */
 .progress-wrap{margin-bottom:1.5rem}
@@ -41,7 +40,6 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .progress-text{font-size:12px;color:#888780}
 .progress-text span{color:#2c2c2a;font-weight:500}
 
-/* 오늘 이미 기록 */
 .already-msg{background:#e1f5ee;border-radius:8px;padding:1rem;font-size:13px;color:#085041;line-height:1.75;margin-bottom:1rem}
 
 /* 오늘 결과 */
@@ -67,25 +65,43 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 .code-input:focus{outline:none;border-color:#888780}
 .code-error{font-size:12px;color:#993c1d;margin-top:0.4rem;text-align:center;display:none}
 
-/* 전체 결과 화면 */
+/* 결과 화면 */
 .result-section{display:none}
 .result-section.visible{display:block;animation:fadeIn 0.4s ease}
+
+/* 일별 기록 카드 */
 .day-card{background:#fafaf8;border:0.5px solid #e8e6de;border-radius:8px;padding:0.875rem 1rem;margin-bottom:0.625rem}
 .day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem}
 .day-num{font-size:12px;color:#888780}
 .day-dominant{font-size:13px;font-weight:500;color:#2c2c2a}
 .day-colormap{height:10px;border-radius:5px;overflow:hidden;display:flex}
 .day-colormap-seg{height:100%}
-.trend-emo-row{margin-bottom:1.25rem}
-.trend-emo-label{font-size:12px;color:#5f5e5a;margin-bottom:0.375rem;display:flex;align-items:center;gap:6px}
-.trend-emo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.trend-bars{display:flex;gap:4px;align-items:flex-end;height:60px}
-.trend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.trend-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px}
-.trend-bar-label{font-size:9px;color:#b4b2a9}
-.summary-card{background:#f8f7f4;border:0.5px solid #d3d1c7;border-radius:10px;padding:1rem 1.125rem}
-.summary-card p{font-size:13px;line-height:1.8;color:#5f5e5a}
-.summary-card .hl{color:#2c2c2a;font-weight:500}
+
+/* 누적 막대 차트 */
+.stacked-chart{display:flex;gap:6px;align-items:flex-end;height:160px;padding-bottom:24px;position:relative;margin-bottom:1rem}
+.stacked-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;height:100%}
+.stacked-bar{width:100%;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden;position:absolute;bottom:20px;transition:height 0.6s ease}
+.stacked-seg{width:100%;flex-shrink:0}
+.stacked-label{position:absolute;bottom:0;font-size:10px;color:#888780;text-align:center;width:100%}
+
+/* 꺾은선 그래프 */
+.line-chart-wrap{position:relative;margin-bottom:1rem;overflow-x:auto}
+.line-chart-svg{display:block;width:100%;min-width:280px}
+.line-legend{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem}
+.line-legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#5f5e5a}
+.line-legend-dot{width:8px;height:8px;border-radius:50%}
+
+/* AI 임상 해석 */
+.interpret-loading{text-align:center;padding:1.5rem;font-size:13px;color:#888780}
+.interpret-dot::after{content:'';animation:dots 1.2s infinite}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+.interpret-section{}
+.interpret-block{margin-bottom:1rem;padding:1rem;background:#f8f7f4;border-radius:8px;border:0.5px solid #d3d1c7}
+.interpret-block-label{font-size:10px;font-weight:500;color:#888780;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem}
+.interpret-block p{font-size:13px;line-height:1.8;color:#2c2c2a}
+.interpret-block.clinical{border-left:3px solid #378ADD;background:#f0f5fc}
+.interpret-block.message{border-left:3px solid #1D9E75;background:#f0faf5}
+
 .error-msg{background:#faece7;border:0.5px solid #e8a08a;border-radius:8px;padding:0.75rem 1rem;font-size:13px;color:#993c1d;margin-bottom:1rem;display:none}
 
 @media(max-width:480px){
@@ -93,6 +109,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
   .header h1{font-size:20px}
   .card{padding:1rem}
   textarea{min-height:110px;font-size:13px}
+  .stacked-chart{height:130px}
 }
 </style>
 </head>
@@ -105,7 +122,6 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 
   <div class="error-msg" id="errorMsg"></div>
 
-  <!-- 메인 화면 -->
   <div id="mainSection">
     <div class="card">
       <div class="progress-wrap">
@@ -113,12 +129,10 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
         <div class="progress-text" id="progressText"></div>
       </div>
 
-      <!-- 오늘 이미 기록한 경우 -->
       <div id="alreadyMsg" class="already-msg hidden">
         오늘은 이미 기록을 남기셨어요. 내일 다시 접속해 주세요 🌿
       </div>
 
-      <!-- 기록 폼 -->
       <div id="recordForm">
         <div class="section-label">오늘의 감정을 기록해주세요</div>
         <p style="font-size:13px;color:#5f5e5a;line-height:1.75;margin-bottom:1rem">1회기에서 나눴던 내용을 떠올리며, 반려동물과의 이별에 대해 지금 느끼는 감정을 자유롭게 써주세요.</p>
@@ -129,19 +143,15 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
         </div>
       </div>
 
-      <!-- 오늘 결과 (저장 직후 표시) -->
       <div id="todayResult" class="today-result hidden">
         <div class="section-label" style="margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid #e8e6de">오늘의 감정</div>
         <div class="colormap" id="todayColormap"></div>
         <div class="emo-labels" id="todayLabels"></div>
         <div id="todayBars"></div>
-        <div class="insight-box">
-          <p id="todayInsight"></p>
-        </div>
+        <div class="insight-box"><p id="todayInsight"></p></div>
       </div>
     </div>
 
-    <!-- 코드 입력 -->
     <div class="code-section">
       <div class="code-label">2회기 진행자 코드 입력</div>
       <div class="code-input-wrap">
@@ -152,21 +162,37 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
     </div>
   </div>
 
-  <!-- 전체 결과 화면 -->
+  <!-- 결과 화면 -->
   <div class="result-section" id="resultSection">
+
+    <!-- 일별 기록 -->
     <div class="card">
       <div class="section-label">일별 감정 기록</div>
       <div id="dayCards"></div>
     </div>
 
+    <!-- 누적 막대 차트 -->
     <div class="card">
-      <div class="section-label">감정별 변화 추이</div>
-      <div id="trendWrap"></div>
+      <div class="section-label">일별 감정 구성</div>
+      <div class="stacked-chart" id="stackedChart"></div>
+      <div class="emo-labels" id="stackedLegend"></div>
     </div>
 
+    <!-- 꺾은선 그래프 -->
     <div class="card">
-      <div class="section-label">전체 요약</div>
-      <div id="weeklySummary" class="summary-card"></div>
+      <div class="section-label">감정별 변화 추이</div>
+      <div class="line-chart-wrap">
+        <svg class="line-chart-svg" id="lineChart" viewBox="0 0 560 180" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="line-legend" id="lineLegend"></div>
+    </div>
+
+    <!-- AI 임상 해석 -->
+    <div class="card">
+      <div class="section-label">임상 해석</div>
+      <div id="interpretArea">
+        <div class="interpret-loading"><span class="interpret-dot">분석 중</span></div>
+      </div>
     </div>
 
     <div class="btn-row">
@@ -177,6 +203,7 @@ button{padding:0.65rem 1.25rem;font-family:'Gowun Dodum',sans-serif;font-size:13
 
 <script>
 var EMO_COLORS={'슬픔':'#7F77DD','불안':'#D85A30','그리움':'#1D9E75','죄책감':'#BA7517','두려움':'#D4537E','사랑':'#5DCAA5','평온':'#378ADD'};
+var EMO_LIST=['슬픔','불안','그리움','죄책감','두려움','사랑','평온'];
 var STORAGE_KEY='pet_loss_records';
 
 function getRecords(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return [];}}
@@ -213,9 +240,7 @@ function initPage(){
   if(alreadyToday){
     document.getElementById('alreadyMsg').classList.remove('hidden');
     document.getElementById('recordForm').classList.add('hidden');
-    // 오늘 기록 결과 보여주기
-    var todayRecord=records[records.length-1];
-    showTodayResult(todayRecord);
+    showTodayResult(records[records.length-1]);
   }else{
     document.getElementById('alreadyMsg').classList.add('hidden');
     document.getElementById('recordForm').classList.remove('hidden');
@@ -233,37 +258,25 @@ function showError(msg){
 function showTodayResult(data){
   var sorted=Object.entries(data.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
   var total=sorted.reduce(function(s,e){return s+e[1]},0)||1;
-
-  // 컬러맵
   var cm=document.getElementById('todayColormap');
   cm.innerHTML='';
   sorted.forEach(function(e){
     var seg=document.createElement('div');
     seg.className='colormap-seg';
-    seg.style.cssText='width:'+(e[1]/total*100).toFixed(1)+'%;background:'+(EMO_COLORS[e[0]]||'#888780');
+    seg.style.cssText='width:'+(e[1]/total*100).toFixed(1)+'%;background:'+EMO_COLORS[e[0]];
     cm.appendChild(seg);
   });
-
-  // 라벨
-  document.getElementById('todayLabels').innerHTML=
-    sorted.map(function(e){return '<div class="emo-tag"><div class="emo-dot" style="background:'+(EMO_COLORS[e[0]]||'#888780')+'"></div><span>'+e[0]+' '+e[1]+'%</span></div>';}).join('');
-
-  // 바 차트
+  document.getElementById('todayLabels').innerHTML=sorted.map(function(e){return '<div class="emo-tag"><div class="emo-dot" style="background:'+EMO_COLORS[e[0]]+'"></div><span>'+e[0]+' '+e[1]+'%</span></div>';}).join('');
   var bars=document.getElementById('todayBars');
   bars.innerHTML='';
   sorted.forEach(function(e){
     var row=document.createElement('div');
     row.className='bar-row';
-    row.innerHTML='<div class="bar-label">'+e[0]+'</div><div class="bar-track"><div class="bar-fill" style="background:'+(EMO_COLORS[e[0]]||'#888780')+'"></div></div><div class="bar-pct">'+e[1]+'%</div>';
+    row.innerHTML='<div class="bar-label">'+e[0]+'</div><div class="bar-track"><div class="bar-fill" style="background:'+EMO_COLORS[e[0]]+'"></div></div><div class="bar-pct">'+e[1]+'%</div>';
     bars.appendChild(row);
-    setTimeout(function(fill,v){fill.style.width=v+'%';}(row.querySelector('.bar-fill'),e[1]),100);
+    setTimeout(function(f,v){f.style.width=v+'%';}(row.querySelector('.bar-fill'),e[1]),100);
   });
-
-  // 인사이트
-  if(data.insight){
-    document.getElementById('todayInsight').textContent=data.insight;
-  }
-
+  if(data.insight)document.getElementById('todayInsight').textContent=data.insight;
   document.getElementById('todayResult').classList.remove('hidden');
 }
 
@@ -271,60 +284,35 @@ function submitRecord(){
   var text=document.getElementById('textInput').value.trim();
   if(text.length<50){showError('최소 50자 이상 작성해주세요.');return;}
   var btn=document.getElementById('recordBtn');
-  btn.disabled=true;
-  btn.textContent='저장 중...';
-
-  fetch('/api/analyze',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({text:text})
-  })
-  .then(function(res){return res.json();})
-  .then(function(parsed){
-    if(parsed.error)throw new Error(parsed.error);
+  btn.disabled=true;btn.textContent='저장 중...';
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text})})
+  .then(function(r){return r.json();})
+  .then(function(p){
+    if(p.error)throw new Error(p.error);
     var records=getRecords();
-    var newRecord={date:getTodayStr(),day:records.length+1,emotions:parsed.emotions,dominant:parsed.dominant,insight:parsed.insight};
-    records.push(newRecord);
-    saveRecords(records);
+    var nr={date:getTodayStr(),day:records.length+1,emotions:p.emotions,dominant:p.dominant,insight:p.insight};
+    records.push(nr);saveRecords(records);
     document.getElementById('textInput').value='';
     document.getElementById('charCount').textContent='0 / 최소 50자';
     document.getElementById('charCount').className='char-count';
-    btn.disabled=false;
-    btn.textContent='오늘 기록 저장하기';
-    // 폼 숨기고 결과 보여주기
+    btn.disabled=false;btn.textContent='오늘 기록 저장하기';
     document.getElementById('recordForm').classList.add('hidden');
     document.getElementById('alreadyMsg').classList.remove('hidden');
-    showTodayResult(newRecord);
-    renderProgress();
+    showTodayResult(nr);renderProgress();
   })
-  .catch(function(e){
-    btn.disabled=false;
-    btn.textContent='오늘 기록 저장하기';
-    showError('오류가 발생했어요. 잠시 후 다시 시도해주세요.');
-  });
+  .catch(function(e){btn.disabled=false;btn.textContent='오늘 기록 저장하기';showError('오류가 발생했어요. 잠시 후 다시 시도해주세요.');});
 }
 
 function checkCode(){
   var code=document.getElementById('codeInput').value.trim();
   var err=document.getElementById('codeError');
-
-  fetch('/api/verify',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({code:code})
+  fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.success){err.style.display='none';showResult();}
+    else{err.style.display='block';}
   })
-  .then(function(res){return res.json();})
-  .then(function(data){
-    if(data.success){
-      err.style.display='none';
-      showResult();
-    }else{
-      err.style.display='block';
-    }
-  })
-  .catch(function(){
-    err.style.display='block';
-  });
+  .catch(function(){err.style.display='block';});
 }
 
 function showResult(){
@@ -332,60 +320,150 @@ function showResult(){
   if(records.length===0){showError('아직 기록된 데이터가 없어요.');return;}
   document.getElementById('mainSection').style.display='none';
   var rs=document.getElementById('resultSection');
-  rs.style.display='block';
-  rs.classList.add('visible');
+  rs.style.display='block';rs.classList.add('visible');
   renderDayCards(records);
-  renderTrend(records);
-  renderSummary(records);
+  renderStackedChart(records);
+  renderLineChart(records);
+  fetchInterpret(records);
   window.scrollTo(0,0);
 }
 
 function renderDayCards(records){
-  var wrap=document.getElementById('dayCards');
-  wrap.innerHTML='';
+  var wrap=document.getElementById('dayCards');wrap.innerHTML='';
   records.forEach(function(r){
     var sorted=Object.entries(r.emotions).sort(function(a,b){return b[1]-a[1]}).filter(function(e){return e[1]>0});
     var total=sorted.reduce(function(s,e){return s+e[1]},0)||1;
-    var cm=sorted.map(function(e){return '<div class="day-colormap-seg" style="width:'+(e[1]/total*100).toFixed(1)+'%;background:'+(EMO_COLORS[e[0]]||'#888780')+'"></div>';}).join('');
+    var cm=sorted.map(function(e){return '<div class="day-colormap-seg" style="width:'+(e[1]/total*100).toFixed(1)+'%;background:'+EMO_COLORS[e[0]]+'"></div>';}).join('');
     wrap.innerHTML+='<div class="day-card"><div class="day-card-header"><span class="day-num">'+r.day+'일차</span><span class="day-dominant">주된 감정: '+r.dominant+'</span></div><div class="day-colormap">'+cm+'</div></div>';
   });
 }
 
-function renderTrend(records){
-  var wrap=document.getElementById('trendWrap');
-  wrap.innerHTML='';
-  var emos=['슬픔','불안','그리움','죄책감','두려움','사랑','평온'];
-  emos.forEach(function(emo){
-    var vals=records.map(function(r){return r.emotions[emo]||0;});
-    if(!vals.some(function(v){return v>0;}))return;
-    var maxVal=Math.max.apply(null,vals)||1;
-    var bars=vals.map(function(v,i){
-      var h=Math.max((v/maxVal*54),2);
-      return '<div class="trend-bar-wrap"><div class="trend-bar" style="height:'+h+'px;background:'+(EMO_COLORS[emo]||'#888780')+'"></div><div class="trend-bar-label">'+(i+1)+'일</div></div>';
-    }).join('');
-    wrap.innerHTML+='<div class="trend-emo-row"><div class="trend-emo-label"><div class="trend-emo-dot" style="background:'+(EMO_COLORS[emo]||'#888780')+'"></div>'+emo+'</div><div class="trend-bars">'+bars+'</div></div>';
+function renderStackedChart(records){
+  var wrap=document.getElementById('stackedChart');wrap.innerHTML='';
+  var maxTotal=100;
+  records.forEach(function(r,i){
+    var barWrap=document.createElement('div');
+    barWrap.className='stacked-bar-wrap';
+    var bar=document.createElement('div');
+    bar.className='stacked-bar';
+    var totalH=120;
+    EMO_LIST.forEach(function(emo){
+      var v=r.emotions[emo]||0;
+      if(v===0)return;
+      var seg=document.createElement('div');
+      seg.className='stacked-seg';
+      seg.style.cssText='height:'+(v/maxTotal*totalH)+'px;background:'+EMO_COLORS[emo];
+      bar.appendChild(seg);
+    });
+    bar.style.height=(totalH)+'px';
+    var label=document.createElement('div');
+    label.className='stacked-label';
+    label.textContent=(i+1)+'일';
+    barWrap.appendChild(bar);
+    barWrap.appendChild(label);
+    wrap.appendChild(barWrap);
+  });
+
+  // 범례
+  var legend=document.getElementById('stackedLegend');legend.innerHTML='';
+  EMO_LIST.forEach(function(emo){
+    var hasData=records.some(function(r){return (r.emotions[emo]||0)>0;});
+    if(!hasData)return;
+    legend.innerHTML+='<div class="emo-tag"><div class="emo-dot" style="background:'+EMO_COLORS[emo]+'"></div><span>'+emo+'</span></div>';
   });
 }
 
-function renderSummary(records){
-  var emos=['슬픔','불안','그리움','죄책감','두려움','사랑','평온'];
-  var totals={};
-  emos.forEach(function(e){totals[e]=0;});
-  records.forEach(function(r){emos.forEach(function(e){totals[e]+=(r.emotions[e]||0);});});
-  var top3=Object.entries(totals).sort(function(a,b){return b[1]-a[1]}).slice(0,3).filter(function(e){return e[1]>0});
-  var top3text=top3.map(function(e){return '<span class="hl">'+e[0]+'</span>';}).join(', ');
+function renderLineChart(records){
+  var svg=document.getElementById('lineChart');
+  svg.innerHTML='';
+  var W=560,H=160,padL=30,padR=10,padT=10,padB=30;
+  var chartW=W-padL-padR,chartH=H-padT-padB;
+  var n=records.length;
+  if(n<2)return;
 
-  var changeText='';
-  if(records.length>=2){
-    var neg=['슬픔','불안','죄책감','두려움'];
-    var first=neg.reduce(function(s,e){return s+(records[0].emotions[e]||0);},0);
-    var last=neg.reduce(function(s,e){return s+(records[records.length-1].emotions[e]||0);},0);
-    var diff=first-last;
-    if(diff>10)changeText='<p style="margin-top:0.5rem">첫날에 비해 부정 감정이 <span class="hl">'+diff+'%p 감소</span>했어요.</p>';
-    else if(diff<-10)changeText='<p style="margin-top:0.5rem">첫날에 비해 부정 감정이 <span class="hl">'+Math.abs(diff)+'%p 증가</span>했어요.</p>';
-    else changeText='<p style="margin-top:0.5rem">전체적으로 감정 변화가 <span class="hl">안정적</span>이었어요.</p>';
+  // 그리드
+  for(var g=0;g<=4;g++){
+    var y=padT+chartH*(1-g/4);
+    var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',padL);line.setAttribute('y1',y);
+    line.setAttribute('x2',W-padR);line.setAttribute('y2',y);
+    line.setAttribute('stroke','#e8e6de');line.setAttribute('stroke-width','0.5');
+    svg.appendChild(line);
+    var txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',padL-4);txt.setAttribute('y',y+4);
+    txt.setAttribute('text-anchor','end');txt.setAttribute('font-size','9');
+    txt.setAttribute('fill','#b4b2a9');txt.textContent=g*25+'%';
+    svg.appendChild(txt);
   }
-  document.getElementById('weeklySummary').innerHTML='<p>가장 많이 느낀 감정은 '+top3text+' 이에요.</p>'+changeText;
+
+  // x축 레이블
+  for(var d=0;d<n;d++){
+    var x=padL+d*(chartW/(n-1));
+    var xt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    xt.setAttribute('x',x);xt.setAttribute('y',H-padB+16);
+    xt.setAttribute('text-anchor','middle');xt.setAttribute('font-size','9');
+    xt.setAttribute('fill','#888780');xt.textContent=(d+1)+'일';
+    svg.appendChild(xt);
+  }
+
+  // 감정별 선
+  var legend=document.getElementById('lineLegend');legend.innerHTML='';
+  EMO_LIST.forEach(function(emo){
+    var vals=records.map(function(r){return r.emotions[emo]||0;});
+    var hasData=vals.some(function(v){return v>0;});
+    if(!hasData)return;
+
+    var points=vals.map(function(v,i){
+      var x=padL+i*(chartW/(n-1));
+      var y=padT+chartH*(1-v/100);
+      return x+','+y;
+    }).join(' ');
+
+    var polyline=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    polyline.setAttribute('points',points);
+    polyline.setAttribute('fill','none');
+    polyline.setAttribute('stroke',EMO_COLORS[emo]);
+    polyline.setAttribute('stroke-width','2');
+    polyline.setAttribute('stroke-linejoin','round');
+    polyline.setAttribute('stroke-linecap','round');
+    svg.appendChild(polyline);
+
+    // 점
+    vals.forEach(function(v,i){
+      var x=padL+i*(chartW/(n-1));
+      var y=padT+chartH*(1-v/100);
+      var circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx',x);circle.setAttribute('cy',y);circle.setAttribute('r','3');
+      circle.setAttribute('fill',EMO_COLORS[emo]);circle.setAttribute('stroke','#fff');circle.setAttribute('stroke-width','1.5');
+      svg.appendChild(circle);
+    });
+
+    legend.innerHTML+='<div class="line-legend-item"><div class="line-legend-dot" style="background:'+EMO_COLORS[emo]+'"></div><span>'+emo+'</span></div>';
+  });
+}
+
+function fetchInterpret(records){
+  var area=document.getElementById('interpretArea');
+  area.innerHTML='<div class="interpret-loading"><span class="interpret-dot">임상 해석 생성 중</span></div>';
+  fetch('/api/interpret',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({records:records})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.error){area.innerHTML='<p style="font-size:13px;color:#888780">해석을 불러오지 못했어요.</p>';return;}
+    area.innerHTML=
+      '<div class="interpret-block">'+
+        '<div class="interpret-block-label">감정 변화 패턴</div>'+
+        '<p>'+d.pattern+'</p>'+
+      '</div>'+
+      '<div class="interpret-block clinical">'+
+        '<div class="interpret-block-label">임상심리학적 해석</div>'+
+        '<p>'+d.clinical+'</p>'+
+      '</div>'+
+      '<div class="interpret-block message">'+
+        '<div class="interpret-block-label">진행자 메시지</div>'+
+        '<p>'+d.message+'</p>'+
+      '</div>';
+  })
+  .catch(function(){area.innerHTML='<p style="font-size:13px;color:#888780">해석을 불러오지 못했어요.</p>';});
 }
 
 function closeResult(){

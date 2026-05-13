@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (!text) return res.status(400).json({ error: 'text is required' });
 
   const apiKey = process.env.GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   try {
     const response = await fetch(url, {
@@ -19,19 +19,23 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `Analyze emotions in this Korean text. Return ONLY valid JSON, no other text.
+            text: `당신은 한국어 텍스트에서 감정을 분석하는 도구입니다.
+아래 텍스트의 감정을 분석하고 반드시 JSON만 반환하세요. 백틱, 설명, 마크다운 없이 순수한 JSON 객체만 출력하세요.
 
-{"emotions":{"슬픔":int,"불안":int,"그리움":int,"죄책감":int,"두려움":int,"사랑":int,"평온":int},"dominant":"감정이름","insight":"2문장 한국어 설명"}
+형식:
+{"emotions":{"슬픔":정수,"불안":정수,"그리움":정수,"죄책감":정수,"두려움":정수,"사랑":정수,"평온":정수},"dominant":"가장 높은 감정","insight":"2문장으로 감정을 나와 분리해서 외재화 관점으로 따뜻하게 설명"}
 
-Rules: all integers, sum=100, output JSON only.
+규칙:
+- 모든 감정의 합은 반드시 100
+- 0인 감정도 포함
+- JSON 외 다른 텍스트 절대 금지
 
-Text: ${text}`
+분석할 텍스트: ${text}`
           }]
         }],
         generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 1500,
-          thinkingConfig: { thinkingBudget: 0 }
+          temperature: 0.3,
+          maxOutputTokens: 500
         }
       })
     });
@@ -39,35 +43,20 @@ Text: ${text}`
     const data = await response.json();
 
     if (data.error) {
-      return res.status(500).json({ error: data.error.message });
+      return res.status(500).json({ error: data.error.message || 'Gemini API error' });
     }
 
-    var fullText = '';
-    var parts = data.candidates?.[0]?.content?.parts || [];
-    for (var i = 0; i < parts.length; i++) {
-      if (parts[i].text) fullText += parts[i].text;
-    }
-
-    if (!fullText) {
-      return res.status(500).json({ error: 'Empty response' });
-    }
-
-    var cleaned = fullText.replace(/```json/g, '').replace(/```/g, '').trim();
-    var jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
-      return res.status(500).json({ error: 'No JSON found', debug: cleaned.slice(0, 300) });
+      return res.status(500).json({ error: 'Failed to parse response', raw: cleaned });
     }
 
-    var parsed;
-    try {
-      parsed = JSON.parse(jsonMatch[0]);
-    } catch (e) {
-      return res.status(500).json({ error: 'JSON parse error', debug: jsonMatch[0].slice(0, 300) });
-    }
-
-    return res.status(200).json(parsed);
+    const parsed = JSON.parse(jsonMatch[0]);
+    res.status(200).json(parsed);
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    res.status(500).json({ error: e.message });
   }
 }
