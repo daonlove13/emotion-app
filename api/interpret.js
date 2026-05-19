@@ -15,18 +15,16 @@ export default async function handler(req, res) {
     process.env.GEMINI_API_KEY_3,
   ].filter(Boolean);
 
-  if (API_KEYS.length === 0) {
-    return res.status(500).json({ error: 'No API keys configured' });
-  }
+  if (API_KEYS.length === 0) return res.status(500).json({ error: 'No API keys configured' });
 
   const summary = records.map(r =>
-    `${r.day}회차: 슬픔${r.emotions['슬픔']}% 불안${r.emotions['불안']}% 그리움${r.emotions['그리움']}% 죄책감${r.emotions['죄책감']}% 두려움${r.emotions['두려움']}% 사랑${r.emotions['사랑']}% 평온${r.emotions['평온']}% (주된감정:${r.dominant})`
+    `${r.day}회차: 억울함${r.emotions['억울함']}% 분노${r.emotions['분노']}% 서운함${r.emotions['서운함']}% 두려움${r.emotions['두려움']}% 불안${r.emotions['불안']}% 답답함${r.emotions['답답함']}% 무기력${r.emotions['무기력']}% (주된감정:${r.dominant})`
   ).join('\n');
 
   const prompt = `당신은 임상심리학적 관점에서 감정 데이터를 해석하는 전문가입니다.
 
-아래는 반려동물과의 이별을 준비하는 프로그램 참가자의 감정 기록입니다.
-이 프로그램은 펫로스 증후군 예방을 위한 예기 애도(anticipatory grief) 프로그램입니다.
+아래는 일상적 '말 참음' 스트레스 완화 프로그램 참가자의 감정 기록입니다.
+이 프로그램은 표현적 글쓰기와 자기주장 훈련을 통해 말 참음으로 인한 스트레스를 완화하는 것을 목적으로 합니다.
 
 ${summary}
 
@@ -34,7 +32,7 @@ ${summary}
 
 {
   "pattern": "감정 변화 패턴을 2-3문장으로 설명. 구체적인 수치 언급.",
-  "clinical": "임상심리학적 관점에서 이 패턴의 의미를 2-3문장으로 해석. 예기 애도, 애착, 심리적 회복력 등 관련 개념 활용.",
+  "clinical": "임상심리학적 관점에서 이 패턴의 의미를 2-3문장으로 해석. 표현억제, 회피적 대처, 자기주장 등 관련 개념 활용.",
   "message": "참가자에게 전하는 따뜻하고 전문적인 응원 메시지 2문장."
 }
 
@@ -59,10 +57,8 @@ JSON만 반환하고 다른 텍스트는 절대 포함하지 마세요.`;
       });
 
       const data = await response.json();
-
       if (data.error) {
-        const code = data.error.code;
-        if (code === 429 || code === 503) continue;
+        if (data.error.code === 429 || data.error.code === 503) continue;
         return res.status(500).json({ error: data.error.message });
       }
 
@@ -71,7 +67,6 @@ JSON만 반환하고 다른 텍스트는 절대 포함하지 마세요.`;
       for (var j = 0; j < parts.length; j++) {
         if (parts[j].text) fullText += parts[j].text;
       }
-
       if (!fullText) continue;
 
       var cleaned = fullText.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -79,17 +74,10 @@ JSON만 반환하고 다른 텍스트는 절대 포함하지 마세요.`;
       if (!jsonMatch) continue;
 
       var parsed;
-      try {
-        parsed = JSON.parse(jsonMatch[0]);
-      } catch (e) {
-        continue;
-      }
+      try { parsed = JSON.parse(jsonMatch[0]); } catch (e) { continue; }
 
       return res.status(200).json(parsed);
-
-    } catch (e) {
-      continue;
-    }
+    } catch (e) { continue; }
   }
 
   return res.status(500).json({ error: '모든 API 키의 할당량이 초과됐어요.' });
