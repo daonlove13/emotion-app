@@ -202,15 +202,15 @@ button{
 .colormap{height:18px;border-radius:2px;overflow:hidden;display:flex;margin-bottom:0.625rem}
 .colormap-seg{height:100%}
 .emo-labels{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem}
-.emo-tag{display:flex;align-items:center;gap:4px;font-size:11px;color:#a09890}
+.emo-tag{display:flex;align-items:center;gap:4px;font-size:11px;color:#b0a898}
 .emo-dot{width:7px;height:7px;border-radius:1px;flex-shrink:0}
 
 /* 바 차트 */
 .bar-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem}
-.bar-label{font-size:12px;width:52px;flex-shrink:0;text-align:right;color:#a09890}
-.bar-track{flex:1;height:5px;background:#201e1b;border-radius:1px;overflow:hidden}
+.bar-label{font-size:12px;width:52px;flex-shrink:0;text-align:right;color:#b0a898}
+.bar-track{flex:1;height:5px;background:#201a14;border-radius:1px;overflow:hidden}
 .bar-fill{height:100%;border-radius:1px;width:0;transition:width 0.8s ease}
-.bar-pct{font-size:11px;color:#7a7268;width:28px;flex-shrink:0}
+.bar-pct{font-size:11px;color:#908070;width:28px;flex-shrink:0}
 
 /* 인사이트 */
 .insight-box{
@@ -220,7 +220,7 @@ button{
   margin-top:1rem;
   border-left:2px solid #6b2222;
 }
-.insight-box p{font-size:13px;line-height:1.8;color:#a09890;font-style:italic}
+.insight-box p{font-size:13px;line-height:1.8;color:#b0a898;font-style:italic}
 
 /* 코드 입력 */
 .code-section{margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid #2a2520}
@@ -319,7 +319,7 @@ button{
 .line-chart-wrap{overflow-x:auto;margin-bottom:0.75rem}
 .line-chart-svg{display:block;width:100%;min-width:280px}
 .line-legend{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.625rem}
-.line-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#908880}
+.line-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#b0a898}
 .line-legend-dot{width:7px;height:7px;border-radius:1px}
 
 /* 임상 해석 */
@@ -328,7 +328,7 @@ button{
 .interpret-block{margin-bottom:1rem;padding:1rem;background:#111008;border-radius:3px;border:0.5px solid #2a2520}
 .interpret-block:last-child{margin-bottom:0}
 .interpret-block-label{font-size:10px;font-weight:500;color:#9b6644;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem}
-.interpret-block p{font-size:13px;line-height:1.8;color:#a09890}
+.interpret-block p{font-size:13px;line-height:1.8;color:#c0b8a8}
 .interpret-block.clinical{border-left:2px solid #9b4444}
 .interpret-block.message{border-left:2px solid #3d6b37}
 
@@ -412,29 +412,16 @@ button{
     </div>
 
     <div class="card">
-      <div class="section-label">부정 · 긍정 감정 변화</div>
-      <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap">
-        <div style="flex:1;min-width:130px;background:#1a0000;border-radius:3px;padding:0.625rem 0.875rem;border:0.5px solid #8b000044">
-          <div style="font-size:10px;color:#8b0000;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.375rem">부정 감정</div>
-          <div style="font-size:11px;color:#666;line-height:1.7">억울함 · 분노 · 두려움 · 불안 · 답답함 · 무기력</div>
-        </div>
-        <div style="flex:1;min-width:130px;background:#0a1a08;border-radius:3px;padding:0.625rem 0.875rem;border:0.5px solid #2d5a2744">
-          <div style="font-size:10px;color:#2d5a27;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.375rem">긍정 감정</div>
-          <div style="font-size:11px;color:#666;line-height:1.7">서운함</div>
-        </div>
-      </div>
+      <div class="section-label">말 참음 강도 변화</div>
+      <p style="font-size:12px;color:#908070;margin-bottom:1rem;line-height:1.6">회차별 감정 총량이에요. 막대가 낮아질수록 말 참음으로 인한 감정적 부담이 줄어들고 있는 거예요.</p>
       <div class="stacked-chart-wrap">
         <div class="stacked-chart" id="stackedChart"></div>
-      </div>
-      <div class="stacked-legend">
-        <div class="stacked-legend-item"><div class="legend-rect" style="background:#8b0000"></div>부정 감정</div>
-        <div class="stacked-legend-item"><div class="legend-rect" style="background:#2d5a27"></div>서운함</div>
       </div>
     </div>
 
     <div class="card">
       <div class="section-label">주요 감정 변화 추이</div>
-      <p style="font-size:11px;color:#555;margin-bottom:0.75rem;font-style:italic">변화폭이 큰 감정 상위 3개</p>
+      <p style="font-size:11px;color:#908070;margin-bottom:0.75rem;font-style:italic">변화폭이 큰 감정 상위 3개</p>
       <div class="line-chart-wrap">
         <svg class="line-chart-svg" id="lineChart" viewBox="0 0 540 200" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
@@ -692,20 +679,43 @@ function toggleDayText(idx){
 
 function renderStackedChart(records){
   var wrap=document.getElementById('stackedChart');wrap.innerHTML='';
+  var ALL=['억울함','분노','서운함','두려움','불안','답답함','무기력'];
   var maxH=110;
+
+  // 최대값 계산 (상대적 비교)
+  var totals=records.map(function(r){
+    return ALL.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
+  });
+  var maxVal=Math.max.apply(null,totals)||100;
+
   records.forEach(function(r,i){
-    var negVal=NEG.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
-    var posVal=POS.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
+    var total=ALL.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
+    var h=(total/maxVal)*maxH;
+
+    // 첫 회차 기준 변화량
+    var firstTotal=totals[0]||1;
+    var pct=Math.round(total/firstTotal*100);
+    var isDown=total<firstTotal;
+
     var barWrap=document.createElement('div');barWrap.className='stacked-bar-wrap';
-    var bar=document.createElement('div');bar.className='stacked-bar';
-    var negH=(negVal/100)*maxH;
-    var posH=(posVal/100)*maxH;
-    bar.style.height=(negH+posH)+'px';
-    var negSeg=document.createElement('div');negSeg.className='stacked-seg-neg';negSeg.style.height=negH+'px';
-    var posSeg=document.createElement('div');posSeg.className='stacked-seg-pos';posSeg.style.height=posH+'px';
-    bar.appendChild(posSeg);bar.appendChild(negSeg);
-    var label=document.createElement('div');label.className='stacked-label';label.textContent=(i+1)+'회';
-    barWrap.appendChild(bar);barWrap.appendChild(label);
+
+    // 변화량 표시
+    var changeEl=document.createElement('div');
+    changeEl.style.cssText='position:absolute;top:'+(maxH-h-18)+'px;left:0;right:0;text-align:center;font-size:9px;color:'+(isDown?'#6b9955':'#cc4444');
+    if(i>0)changeEl.textContent=(isDown?'▼':'▲')+Math.abs(total-firstTotal);
+
+    var bar=document.createElement('div');
+    bar.style.cssText='width:100%;height:'+h+'px;border-radius:2px 2px 0 0;position:absolute;bottom:20px;'+
+      'background:linear-gradient(180deg,'+(isDown&&i>0?'#6b2222':'#8b0000')+','+(isDown&&i>0?'#4a1515':'#5a0000')+');'+
+      'box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)';
+
+    var label=document.createElement('div');label.className='stacked-label';
+    label.style.color='#908070';
+    label.textContent=(i+1)+'회';
+
+    barWrap.appendChild(changeEl);
+    barWrap.appendChild(bar);
+    barWrap.appendChild(label);
     wrap.appendChild(barWrap);
   });
 }
