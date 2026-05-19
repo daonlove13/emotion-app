@@ -11,13 +11,13 @@ html{overflow-x:hidden;width:100%}
 
 body{
   font-family:'Gowun Dodum',sans-serif;
-  background:#0c0b09;
-  color:#c8c0a8;
+  background:#1c1a16;
+  color:#d8d0bc;
   min-height:100vh;
   padding:2rem 1rem;
   overflow-x:hidden;
   background-image:
-    url("data:image/svg+xml,%3Csvg width='100' height='32' viewBox='0 0 100 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32h100' stroke='%23d4cfc808' stroke-width='0.5'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg width='100' height='32' viewBox='0 0 100 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32h100' stroke='%23d4cfc810' stroke-width='0.5'/%3E%3C/svg%3E");
 }
 
 .app{max-width:620px;margin:0 auto;width:100%}
@@ -39,38 +39,37 @@ body{
   content:'';
   position:absolute;
   bottom:0;left:10%;right:10%;height:0.5px;
-  background:linear-gradient(90deg,transparent,#3a2020,transparent);
+  background:linear-gradient(90deg,transparent,#4a2828,transparent);
 }
 .header h1{
   font-family:'Noto Serif KR',serif;
   font-size:24px;
   font-weight:600;
-  color:#e8dcc8;
+  color:#f0e4cc;
   letter-spacing:0.08em;
   margin-bottom:0.5rem;
   text-shadow:0 0 20px #8b000033;
 }
-.header p{font-size:13px;color:#9a9280;letter-spacing:0.03em;font-style:italic}
+.header p{font-size:13px;color:#a89880;letter-spacing:0.03em;font-style:italic}
 .header .subtitle{
-  font-size:10px;color:#6b2222;
+  font-size:10px;color:#9b3333;
   letter-spacing:0.15em;text-transform:uppercase;
   margin-top:0.5rem;
-  opacity:0.8;
 }
 
 /* 카드 - 찢어진 노트 질감 */
 .card{
-  background:#131109;
+  background:#242018;
   border:none;
   border-radius:0;
   padding:1.375rem 1.25rem;
   margin-bottom:2rem;
   position:relative;
   box-shadow:
-    0 4px 16px rgba(0,0,0,0.5),
-    inset 0 0 60px rgba(0,0,0,0.2);
+    0 4px 20px rgba(0,0,0,0.4),
+    inset 0 0 40px rgba(0,0,0,0.1);
   background-image:
-    url("data:image/svg+xml,%3Csvg width='100' height='32' viewBox='0 0 100 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32h100' stroke='%23ffffff04' stroke-width='0.5'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg width='100' height='32' viewBox='0 0 100 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32h100' stroke='%23ffffff06' stroke-width='0.5'/%3E%3C/svg%3E");
 }
 /* 카드 상단 찢어진 효과 */
 .card::after{
@@ -108,7 +107,7 @@ body{
 /* 진행 바 */
 .progress-wrap{margin-bottom:1.5rem}
 .progress-days{display:flex;gap:0.4rem;margin-bottom:0.625rem}
-.day-dot{flex:1;height:5px;border-radius:0;background:#1a1410;border:0.5px solid #2a1a1a}
+.day-dot{flex:1;height:5px;border-radius:0;background:#262218;border:0.5px solid #3a2828}
 .day-dot.done{background:#8b0000;border-color:#8b0000}
 .day-dot.today{background:#cc2222;border-color:#cc2222;box-shadow:0 0 8px #cc222266}
 .progress-text{font-size:11px;color:#a09080;text-align:right}
@@ -116,7 +115,7 @@ body{
 
 /* 알림 박스 */
 .already-msg{
-  background:#1a1714;
+  background:#252218;
   border:0.5px solid #6b222244;
   border-radius:3px;
   padding:0.875rem 1rem;
@@ -134,9 +133,9 @@ textarea{
   font-family:'Gowun Dodum',sans-serif;
   font-size:14px;
   line-height:1.9;
-  border:0.5px solid #2a2520;
+  border:0.5px solid #3a3228;
   border-radius:3px;
-  background:#111008;
+  background:#1e1c14;
   color:#d4cfc8;
   resize:vertical;
   margin-bottom:0.5rem;
@@ -145,8 +144,8 @@ textarea{
   background-image:url("data:image/svg+xml,%3Csvg width='100' height='28' viewBox='0 0 100 28' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h100' stroke='%23ffffff04' stroke-width='0.5'/%3E%3C/svg%3E");
 }
 textarea:focus{outline:none;border-color:#6b2222}
-textarea::placeholder{color:#706050;font-style:italic}
-.char-count{font-size:11px;color:#706050;text-align:right;margin-bottom:1rem;font-style:italic}
+textarea::placeholder{color:#908070;font-style:italic}
+.char-count{font-size:11px;color:#908070;text-align:right;margin-bottom:1rem;font-style:italic}
 .char-count.ok{color:#9b4444}
 
 /* 버튼 */
@@ -172,7 +171,7 @@ button{
 .btn-secondary{
   background:transparent;
   color:#a09080;
-  border:0.5px solid #2a2520;
+  border:0.5px solid #3a3228;
 }
 .btn-secondary:hover{background:#201e1b;color:#a09890}
 .btn-small{padding:0.5rem 1rem;font-size:12px}
@@ -199,13 +198,13 @@ button{
 /* 바 차트 */
 .bar-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem}
 .bar-label{font-size:12px;width:52px;flex-shrink:0;text-align:right;color:#b0a898}
-.bar-track{flex:1;height:5px;background:#201a14;border-radius:1px;overflow:hidden}
+.bar-track{flex:1;height:5px;background:#2a2418;border-radius:1px;overflow:hidden}
 .bar-fill{height:100%;border-radius:1px;width:0;transition:width 0.8s ease}
 .bar-pct{font-size:11px;color:#a09080;width:28px;flex-shrink:0}
 
 /* 인사이트 */
 .insight-box{
-  background:#111008;
+  background:#1e1c14;
   border-radius:3px;
   padding:0.875rem 1rem;
   margin-top:1rem;
@@ -223,9 +222,9 @@ button{
   font-size:20px;
   letter-spacing:0.5em;
   text-align:center;
-  border:0.5px solid #2a2520;
+  border:0.5px solid #3a3228;
   border-radius:3px;
-  background:#111008;
+  background:#1e1c14;
   color:#c07070;
   -webkit-appearance:none;
 }
@@ -238,8 +237,8 @@ button{
 
 /* 일별 카드 */
 .day-card{
-  background:#111008;
-  border:0.5px solid #2a2520;
+  background:#1e1c14;
+  border:0.5px solid #3a3228;
   border-radius:3px;
   padding:0.875rem 1rem;
   margin-bottom:0.625rem;
@@ -260,15 +259,15 @@ button{
   font-style:italic;
 }
 .day-text.open{display:block;animation:fadeIn 0.2s ease}
-.day-toggle{font-size:10px;color:#706050;margin-top:0.375rem;text-align:right;letter-spacing:0.05em}
+.day-toggle{font-size:10px;color:#908070;margin-top:0.375rem;text-align:right;letter-spacing:0.05em}
 
 /* 맥락 체크리스트 */
 .context-check{
   margin-top:0.75rem;
   padding:0.75rem;
-  background:#1a1714;
+  background:#252218;
   border-radius:3px;
-  border:0.5px solid #2a2520;
+  border:0.5px solid #3a3228;
   display:none;
 }
 .context-check.open{display:block;animation:fadeIn 0.2s ease}
@@ -279,7 +278,7 @@ button{
 .context-options{display:flex;flex-wrap:wrap;gap:0.375rem}
 .ctx-btn{
   padding:4px 10px;font-size:11px;border-radius:2px;
-  cursor:pointer;border:0.5px solid #2a2520;
+  cursor:pointer;border:0.5px solid #3a3228;
   background:transparent;color:#a09080;
   font-family:'Gowun Dodum',sans-serif;
   transition:all 0.15s;
@@ -288,7 +287,7 @@ button{
 .ctx-btn.selected{background:#6b222222;border-color:#6b2222;color:#c07070}
 .context-result{
   margin-top:0.625rem;padding:0.5rem 0.75rem;
-  background:#111008;border-radius:2px;
+  background:#1e1c14;border-radius:2px;
   font-size:11px;color:#a09890;line-height:1.7;
   border-left:2px solid #6b2222;display:none;
 }
@@ -316,7 +315,7 @@ button{
 /* 임상 해석 */
 .interpret-loading{text-align:center;padding:1.5rem;font-size:12px;color:#a09080;font-style:italic}
 .interpret-dot::after{content:'';animation:dots 1.2s infinite}
-.interpret-block{margin-bottom:1rem;padding:1rem;background:#111008;border-radius:3px;border:0.5px solid #2a2520}
+.interpret-block{margin-bottom:1rem;padding:1rem;background:#1e1c14;border-radius:3px;border:0.5px solid #3a3228}
 .interpret-block:last-child{margin-bottom:0}
 .interpret-block-label{font-size:10px;font-weight:500;color:#c08855;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem}
 .interpret-block p{font-size:13px;line-height:1.8;color:#c0b8a8}
@@ -324,7 +323,7 @@ button{
 .interpret-block.message{border-left:2px solid #3d6b37}
 
 /* 스트레스 슬라이더 */
-.stress-wrap{margin-bottom:1rem;padding:0.875rem 1rem;background:#111008;border-radius:3px;border:0.5px solid #2a1a1a}
+.stress-wrap{margin-bottom:1rem;padding:0.875rem 1rem;background:#1e1c14;border-radius:3px;border:0.5px solid #3a2828}
 .stress-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
 .stress-title{font-size:12px;color:#b0a898}
 .stress-val{font-size:22px;font-weight:600;color:#cc4444;font-family:'Noto Serif KR',serif;min-width:28px;text-align:right}
@@ -347,7 +346,7 @@ input[type=range]::-moz-range-thumb{
 }
 
 .error-msg{
-  background:#1a0f0f;
+  background:#281818;
   border:0.5px solid #6b222266;
   border-radius:3px;
   padding:0.75rem 1rem;
@@ -381,7 +380,7 @@ input[type=range]::-moz-range-thumb{
         <div class="progress-days" id="progressDays"></div>
         <div class="progress-text" id="progressText"></div>
       </div>
-      <div style="background:#1a1410;border:0.5px solid #3a2a1a;border-radius:3px;padding:0.625rem 0.875rem;margin-bottom:1rem;font-size:11px;color:#908070;line-height:1.6">
+      <div style="background:#262218;border:0.5px solid #3a2a1a;border-radius:3px;padding:0.625rem 0.875rem;margin-bottom:1rem;font-size:11px;color:#908070;line-height:1.6">
         ⚠ 기록은 이 기기의 브라우저에 저장됩니다. <strong style="color:#c0a880">매번 같은 브라우저</strong>로 접속해주세요. 브라우저 데이터 삭제 시 기록이 사라질 수 있어요.
       </div>
 
