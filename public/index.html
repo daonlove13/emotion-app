@@ -670,41 +670,40 @@ function toggleDayText(idx){
 
 function renderStackedChart(records){
   var wrap=document.getElementById('stackedChart');wrap.innerHTML='';
-  var ALL=['억울함','분노','서운함','두려움','불안','답답함','무기력'];
+  var NEG_ALL=['억울함','분노','서운함','두려움','불안','답답함','무기력'];
   var maxH=110;
 
-  // 최대값 계산 (상대적 비교)
   var totals=records.map(function(r){
-    return ALL.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
+    return NEG_ALL.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
   });
-  var maxVal=Math.max.apply(null,totals)||100;
+  var maxVal=Math.max.apply(null,totals)||1;
 
   records.forEach(function(r,i){
-    var total=ALL.reduce(function(s,e){return s+(r.emotions[e]||0);},0);
-    var h=(total/maxVal)*maxH;
-
-    // 첫 회차 기준 변화량
+    var total=totals[i];
+    var h=Math.max((total/maxVal)*maxH, 4);
     var firstTotal=totals[0]||1;
-    var pct=Math.round(total/firstTotal*100);
-    var isDown=total<firstTotal;
+    var isDown=i>0&&total<firstTotal;
+    var isUp=i>0&&total>firstTotal;
 
     var barWrap=document.createElement('div');barWrap.className='stacked-bar-wrap';
 
-    // 변화량 표시
-    var changeEl=document.createElement('div');
-    changeEl.style.cssText='position:absolute;top:'+(maxH-h-18)+'px;left:0;right:0;text-align:center;font-size:9px;color:'+(isDown?'#6b9955':'#cc4444');
-    if(i>0)changeEl.textContent=(isDown?'▼':'▲')+Math.abs(total-firstTotal);
+    if(i>0){
+      var diff=total-firstTotal;
+      var changeEl=document.createElement('div');
+      changeEl.style.cssText='position:absolute;top:'+(maxH-h-20)+'px;left:0;right:0;text-align:center;font-size:9px;color:'+(isDown?'#6b9955':'#cc4444');
+      changeEl.textContent=(isDown?'▼':'▲')+Math.abs(diff);
+      barWrap.appendChild(changeEl);
+    }
 
     var bar=document.createElement('div');
     bar.style.cssText='width:100%;height:'+h+'px;border-radius:2px 2px 0 0;position:absolute;bottom:20px;'+
-      'background:linear-gradient(180deg,'+(isDown&&i>0?'#6b2222':'#8b0000')+','+(isDown&&i>0?'#4a1515':'#5a0000')+');'+
+      'background:linear-gradient(180deg,'+(isDown?'#4a6b3a':'#8b0000')+','+(isDown?'#2a4a1a':'#5a0000')+');'+
       'box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)';
 
     var label=document.createElement('div');label.className='stacked-label';
-    label.style.color='#908070';
+    label.style.color='#a09080';
     label.textContent=(i+1)+'회';
 
-    barWrap.appendChild(changeEl);
     barWrap.appendChild(bar);
     barWrap.appendChild(label);
     wrap.appendChild(barWrap);
