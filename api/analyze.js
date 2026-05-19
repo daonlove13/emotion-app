@@ -15,15 +15,17 @@ export default async function handler(req, res) {
     process.env.GEMINI_API_KEY_3,
   ].filter(Boolean);
 
-  if (API_KEYS.length === 0) return res.status(500).json({ error: 'No API keys configured' });
+  if (API_KEYS.length === 0) {
+    return res.status(500).json({ error: 'No API keys configured' });
+  }
 
-  const prompt = `다음은 한국어로 작성된 일상적 '말 참음' 상황 기록입니다. 이 텍스트에 담긴 감정을 분석하고 반드시 JSON만 반환하세요. 다른 텍스트 없이 JSON만.
+  const prompt = `Analyze emotions in this Korean text. Return ONLY valid JSON, no other text.
 
-{"emotions":{"억울함":정수,"분노":정수,"서운함":정수,"두려움":정수,"불안":정수,"답답함":정수,"무기력":정수},"dominant":"가장 높은 감정 이름","insight":"2문장. 말 참음 상황에서 느낀 감정을 외재화 관점으로 따뜻하게 한국어로 설명."}
+{"emotions":{"슬픔":int,"불안":int,"그리움":int,"죄책감":int,"두려움":int,"사랑":int,"평온":int},"dominant":"감정이름","insight":"2문장 한국어 설명"}
 
-모든 감정의 합=100. JSON 외 다른 텍스트 절대 금지.
+Rules: all integers, sum=100, output JSON only.
 
-텍스트: ${text}`;
+Text: ${text}`;
 
   for (var i = 0; i < API_KEYS.length; i++) {
     const apiKey = API_KEYS[i];
@@ -44,8 +46,10 @@ export default async function handler(req, res) {
       });
 
       const data = await response.json();
+
       if (data.error) {
-        if (data.error.code === 429 || data.error.code === 503) continue;
+        const code = data.error.code;
+        if (code === 429 || code === 503) continue;
         return res.status(500).json({ error: data.error.message });
       }
 
@@ -54,6 +58,7 @@ export default async function handler(req, res) {
       for (var j = 0; j < parts.length; j++) {
         if (parts[j].text) fullText += parts[j].text;
       }
+
       if (!fullText) continue;
 
       var cleaned = fullText.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -61,10 +66,17 @@ export default async function handler(req, res) {
       if (!jsonMatch) continue;
 
       var parsed;
-      try { parsed = JSON.parse(jsonMatch[0]); } catch (e) { continue; }
+      try {
+        parsed = JSON.parse(jsonMatch[0]);
+      } catch (e) {
+        continue;
+      }
 
       return res.status(200).json(parsed);
-    } catch (e) { continue; }
+
+    } catch (e) {
+      continue;
+    }
   }
 
   return res.status(500).json({ error: '모든 API 키의 할당량이 초과됐어요. 잠시 후 다시 시도해주세요.' });
