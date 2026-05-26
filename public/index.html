@@ -189,9 +189,11 @@ button{
 
 .code-section{margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid #c8b89866}
 .code-label{font-size:11px;color:#6a5840;margin-bottom:0.625rem;text-align:center;letter-spacing:0.08em}
-.code-input-wrap{display:flex;gap:0.5rem}
+.code-input-wrap{display:flex;gap:0.5rem;width:100%}
 .code-input{
-  flex:1;padding:0.7rem 1rem;
+  flex:1;
+  min-width:0;
+  padding:0.7rem 0.5rem;
   font-family:'Noto Serif KR',serif;
   font-size:20px;
   letter-spacing:0.5em;
@@ -201,6 +203,9 @@ button{
   background:#faf5ec;
   color:#8b0000;
   -webkit-appearance:none;
+  height:48px;
+  line-height:1;
+  width:0;
 }
 .code-input:focus{outline:none;border-color:#8b0000}
 .code-error{font-size:11px;color:#8b0000;margin-top:0.4rem;text-align:center;display:none;letter-spacing:0.05em}
@@ -343,8 +348,8 @@ input[type=range]::-moz-range-thumb{
         <div class="progress-days" id="progressDays"></div>
         <div class="progress-text" id="progressText"></div>
       </div>
-      <div style="background:#262218;border:0.5px solid #3a2a1a;border-radius:3px;padding:0.625rem 0.875rem;margin-bottom:1rem;font-size:11px;color:#a09080;line-height:1.8">
-        ⚠ 카카오톡 링크는 <strong style="color:#c0a880">크롬 또는 사파리</strong>로 열어주세요.<br>매번 <strong style="color:#c0a880">같은 브라우저</strong>로 접속해야 기록이 유지돼요. 시크릿 모드 사용 금지.
+      <div style="background:#ede4d0;border:0.5px solid #8b000044;border-radius:2px;padding:0.625rem 0.875rem;margin-bottom:1rem;font-size:11px;color:#6a5840;line-height:1.8">
+        ⚠ 카카오톡 링크는 <strong style="color:#8b0000">크롬 또는 사파리</strong>로 열어주세요.<br>매번 <strong style="color:#8b0000">같은 브라우저</strong>로 접속해야 기록이 유지돼요. 시크릿 모드 사용 금지.
       </div>
 
       <div id="alreadyMsg" class="already-msg hidden">
