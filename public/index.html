@@ -534,6 +534,9 @@ function submitRecord(){
     var records=getRecords();
     var nr={date:getTodayStr(),day:records.length+1,emotions:p.emotions,dominant:p.dominant,insight:p.insight,text:text,stress:parseInt(document.getElementById('stressSlider').value)};
     records.push(nr);saveRecords(records);
+    // Supabase에 제출 여부 전송
+    var userName=localStorage.getItem('user_name')||'익명';
+    fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:userName,day:nr.day,date:nr.date})}).catch(function(){});
     document.getElementById('textInput').value='';
     document.getElementById('charCount').textContent='0 / 최소 50자';
     document.getElementById('charCount').className='char-count';
