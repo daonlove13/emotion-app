@@ -342,6 +342,20 @@ input[type=range]::-moz-range-thumb{
 
   <div class="error-msg" id="errorMsg"></div>
 
+  <!-- 이름 입력 화면 -->
+  <div id="nameSection" class="hidden">
+    <div class="card">
+      <div class="section-label">시작하기</div>
+      <p style="font-size:13px;color:#6a5840;line-height:1.75;margin-bottom:1.25rem">프로그램에 오신 것을 환영해요.<br>기록 확인을 위해 이름을 입력해주세요.</p>
+      <input type="text" id="nameInput" placeholder="이름을 입력해주세요"
+        style="width:100%;padding:0.75rem 1rem;font-family:'Gowun Dodum',sans-serif;font-size:14px;border:0.5px solid #c8b898;border-radius:2px;background:#faf5ec;color:#2c2416;margin-bottom:0.5rem;-webkit-appearance:none;outline:none;">
+      <div id="nameError" style="font-size:11px;color:#8b0000;margin-bottom:0.75rem;display:none">이름을 입력해주세요.</div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="saveName()">시작하기</button>
+      </div>
+    </div>
+  </div>
+
   <div id="mainSection">
     <div class="card">
       <div class="progress-wrap">
@@ -453,6 +467,27 @@ function getTodayStr(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()
 
 function updateStress(val){
   document.getElementById('stressVal').textContent=val;
+}
+
+function saveName(){
+  var name=document.getElementById('nameInput').value.trim();
+  if(!name){document.getElementById('nameError').style.display='block';return;}
+  localStorage.setItem('user_name',name);
+  document.getElementById('nameSection').classList.add('hidden');
+  document.getElementById('mainSection').style.display='block';
+  initPage();
+}
+
+function checkName(){
+  var name=localStorage.getItem('user_name');
+  if(!name){
+    document.getElementById('nameSection').classList.remove('hidden');
+    document.getElementById('mainSection').style.display='none';
+  }else{
+    document.getElementById('nameSection').classList.add('hidden');
+    document.getElementById('mainSection').style.display='block';
+    initPage();
+  }
 }
 
 function countChars(){
@@ -840,8 +875,9 @@ function closeResult(){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  initPage();
+  checkName();
   document.getElementById('codeInput').addEventListener('keydown',function(e){if(e.key==='Enter')checkCode();});
+  document.getElementById('nameInput')&&document.getElementById('nameInput').addEventListener('keydown',function(e){if(e.key==='Enter')saveName();});
 });
 </script>
 </body>
