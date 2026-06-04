@@ -11,13 +11,11 @@ export default async function handler(req, res) {
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+  const SHEETS_URL = process.env.GOOGLE_SHEETS_URL;
 
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return res.status(500).json({ error: 'Supabase not configured' });
-  }
-
-  try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
+  const results = await Promise.allSettled([
+    // Supabase 저장
+    SUPABASE_URL && SUPABASE_KEY ? fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,15 +23,15 @@ export default async function handler(req, res) {
         'Prefer': 'return=minimal'
       },
       body: JSON.stringify({ name, day, date })
-    });
+    }) : Promise.resolve(),
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(500).json({ error: err });
-    }
+    // Google Sheets 저장
+    SHEETS_URL ? fetch(SHEETS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, day, date })
+    }) : Promise.resolve()
+  ]);
 
-    return res.status(200).json({ success: true });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
+  return res.status(200).json({ success: true });
 }
